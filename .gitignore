@@ -1,0 +1,10 @@
+/src/.build/
+/Makefile
+/src/Makefile
+/tr/*.qm
+
+#eclipse
+/.cproject
+/.project
+/.externalToolBuilders
+/.settings
