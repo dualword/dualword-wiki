@@ -30,11 +30,13 @@ public:
 	virtual ~Tab();
 
 signals:
-	void NewTab();
+	void NewBrowser();
+	void NewDualBrowser();
 	void currentForm(Form*);
 
 public slots:
-	int createTab();
+	int createBrowser();
+	int createDualBrowser();
 	void closeTab(int);
 	void currentChanged (int index);
 

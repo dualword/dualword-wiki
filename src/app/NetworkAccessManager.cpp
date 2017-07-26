@@ -60,13 +60,13 @@ NetworkAccessManager::~NetworkAccessManager() {
 
 QNetworkReply* NetworkAccessManager::createRequest(Operation op, const QNetworkRequest& req,
 		QIODevice* outgoingData){
-    QNetworkRequest request(req);
-    if( request.url().host().length() == 0 ||
-    		request.url().host().toLower().contains("wikipedia.org",Qt::CaseInsensitive) ||
-    		request.url().host().toLower().contains("wikimedia.org",Qt::CaseInsensitive) ||
-    		request.url().host().toLower().contains("wikidata.org",Qt::CaseInsensitive))
-        return QNetworkAccessManager::createRequest(op, request, outgoingData);
-
+    if(req.url().host().length() == 0 ||
+    		req.url().host().toLower().contains("wikipedia.org",Qt::CaseInsensitive) ||
+			req.url().host().toLower().contains("wikimedia.org",Qt::CaseInsensitive) ||
+			req.url().host().toLower().contains("wikidata.org",Qt::CaseInsensitive) ||
+			req.url().host().toLower() == "localhost"){
+        return QNetworkAccessManager::createRequest(op, req, outgoingData);
+    }
     return new BlockedNetworkReply(this, req, op);
 
 }

@@ -17,13 +17,13 @@
 #include "BrowserForm.h"
 #include "Browser.h"
 
-BrowserForm::BrowserForm(QWidget *p) : Form(p), browser(new Browser()) {
-	QVBoxLayout *box = new QVBoxLayout();
-	box->addWidget(browser.data());
+BrowserForm::BrowserForm(QWidget *p) : Form(p), browser(new Browser(this)) {
+	QVBoxLayout *box = new QVBoxLayout(this);
+	box->addWidget(browser);
 	setLayout(box);
-    QObject::connect(browser.data(),SIGNAL(titleChanged(const QString&)),
+    QObject::connect(browser,SIGNAL(titleChanged(const QString&)),
     		this, SIGNAL(titleChanged(const QString&)));
-    QObject::connect(browser.data(),SIGNAL(urlChanged(const QUrl&)),
+    QObject::connect(browser,SIGNAL(urlChanged(const QUrl&)),
     		this, SIGNAL(urlChanged(const QUrl&)));
     QObject::connect(browser->page(), SIGNAL(linkHovered(const QString&, const QString&, const QString&)),
     		this, SIGNAL(statusBarMessage(const QString&)));

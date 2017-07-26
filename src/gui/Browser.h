@@ -18,7 +18,6 @@
 #define BROWSER_H_
 
 #include <QtCore>
-#include <QtGui>
 #include <QtWebKit>
 
 class WebPage : public QWebPage{
@@ -40,7 +39,18 @@ public:
 
 public slots:
 	void finished(QNetworkReply * reply);
+	void findTxt();
+
+protected:
+    void contextMenuEvent(QContextMenuEvent *event);
+
+private slots:
+    void openLinkInNewTab();
+
+private:
+	QString searchString;
 
 };
+
 
 #endif /* BROWSER_H_ */

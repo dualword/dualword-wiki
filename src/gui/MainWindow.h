@@ -28,6 +28,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindowForm {
 public:
 	MainWindow(QWidget *p=0, Qt::WindowFlags f=0);
 	virtual ~MainWindow();
+	void init();
 
 protected:
     void closeEvent(QCloseEvent *);
@@ -35,6 +36,8 @@ protected:
 public slots:
 	void currentForm(Form*);
 	void urlChanged(const QUrl&);
+	const QString lang1() const {return combo1->currentText();};
+	const QString lang2() const {return combo2->currentText();};
 
 private slots:
 	void setSlots();
@@ -42,9 +45,14 @@ private slots:
 	void exit();
 	void titleChanged (const QString& title);
 	void load();
+	void currentIndexChanged (const QString&);
+	void fillCombo();
+	void writeSettings();
+	void readSettings();
 
 private:
 	QLineEdit* editUrl;
+	QComboBox *combo1, *combo2;
     Form* form;
 };
 

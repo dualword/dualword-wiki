@@ -2,23 +2,26 @@ include("dualword-wiki.version.pri")
 
 TARGET = dualword-wiki
 TEMPLATE = app
-
+QT += xml xmlpatterns
+ 
 DEPENDPATH += .
 INCLUDEPATH += .
 
-CONFIG += qt webkit network xml release
+CONFIG += qt webkit network release
+
 message(Building: = $${TARGET} - $${VERSION})
 
-HEADERS = \
+HEADERS += \
 	app/DualwordWikiApp.h \
 	app/NetworkAccessManager.h \
 	gui/MainWindow.h \
 	gui/Browser.h \
 	gui/Tab.h \
 	gui/Form.h \
-	gui/BrowserForm.h
+	gui/BrowserForm.h \
+	gui/DualBrowserForm.h
 			
-SOURCES = \
+SOURCES += \
 	app/main.cpp \
 	app/DualwordWikiApp.cpp \
 	app/NetworkAccessManager.cpp \
@@ -27,11 +30,14 @@ SOURCES = \
 	gui/Browser.cpp \
 	gui/Tab.cpp \
 	gui/Form.cpp \
-	gui/BrowserForm.cpp
+	gui/BrowserForm.cpp \
+	gui/DualBrowserForm.cpp
 
 FORMS += \
 	gui/MainWindow.ui
-			
+	
+RESOURCES += html/html.qrc
+		
 unix {	
 	include("dualword-wiki.unix.pri")
 }

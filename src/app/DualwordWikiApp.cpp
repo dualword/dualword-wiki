@@ -33,7 +33,16 @@ DualwordWikiApp *DualwordWikiApp::instance() {
     return (static_cast<DualwordWikiApp *>(QCoreApplication::instance()));
 }
 
+QString DualwordWikiApp::getHtml(const QString& f){
+	QFile file;
+	file.setFileName(f);
+	bool ok = file.open(QIODevice::ReadOnly);
+	QString html = QString(QLatin1String(file.readAll()));
+	return html;
+}
+
 void DualwordWikiApp::start() {
 	win = new MainWindow();
+	win->init();
 	win->show();
 }

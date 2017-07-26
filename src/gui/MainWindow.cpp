@@ -18,7 +18,8 @@
 #include "Form.h"
 
 MainWindow::MainWindow(QWidget *p, Qt::WindowFlags f) : QMainWindow(p, f),
-	editUrl(new QLineEdit(this)), form(0) {
+	editUrl(new QLineEdit(this)), combo1(new QComboBox(this)), combo2(new QComboBox(this)),
+	form(0) {
 	setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose, true);
 	actionBack->setIcon(style()->standardIcon(QStyle::SP_ArrowBack, 0, this));
@@ -28,17 +29,23 @@ MainWindow::MainWindow(QWidget *p, Qt::WindowFlags f) : QMainWindow(p, f),
     actionHome->setIcon(style()->standardIcon(QStyle::SP_DirHomeIcon, 0, this));
     actionNext->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward, 0, this));
     toolBar->insertWidget(actionNext,editUrl);
-	QObject::connect(editUrl,SIGNAL(returnPressed()), this, SLOT(load()));
+    toolBar->insertWidget(actionNext,combo1);
+    toolBar->insertWidget(actionNext,combo2);
+    fillCombo();
     setSlots();
-    tab->createTab();
-
 }
 
 MainWindow::~MainWindow() {
 
 }
 
+void MainWindow::init(){
+	readSettings();
+    tab->createBrowser();
+}
+
 void MainWindow::closeEvent(QCloseEvent *event) {
+	writeSettings();
     event->accept();
 }
 
@@ -68,6 +75,8 @@ void MainWindow::currentForm(Form* f) {
 	    		this, SLOT(titleChanged(const QString&)));
 	    QObject::disconnect(form,SIGNAL(statusBarMessage(const QString&)),
 	    		statusBar(), SLOT(showMessage(const QString&)));
+		QObject::disconnect(combo2,SIGNAL(currentIndexChanged(const QString&)),
+				form, SLOT(changeLang2(const QString&)));
 	}
 	form = f;
     QObject::connect(actionBack,SIGNAL(triggered()), form, SLOT(back()));
@@ -81,7 +90,11 @@ void MainWindow::currentForm(Form* f) {
     		this, SLOT(titleChanged(const QString&)));
     QObject::connect(form,SIGNAL(statusBarMessage(const QString&)),
     		statusBar(), SLOT(showMessage(const QString&)));
+	QObject::connect(combo2,SIGNAL(currentIndexChanged(const QString&)),
+			form, SLOT(changeLang2(const QString&)));
+
 	titleChanged(form->getTitle());
+	urlChanged(form->getUrl());
 }
 
 void MainWindow::titleChanged(const QString& title) {
@@ -96,6 +109,56 @@ void MainWindow::load() {
 }
 
 void MainWindow::urlChanged(const QUrl& url) {
-	editUrl->setText(url.toString());
+	editUrl->setText(form->getUrl());
 	editUrl->setCursorPosition(0);
 }
+
+void MainWindow::currentIndexChanged (const QString& text){
+	if(combo1->currentText() == combo2->currentText()) return;
+}
+
+void MainWindow::fillCombo(){
+	QStringList list;
+	 list << "ar" << "az";
+	 list << "bg" << "be";
+	 list << "ca";
+	 list << "de" << "da";
+	 list << "en" << "es" << "el" << "et" << "eu";
+	 list << "fr" << "fa" << "fi";
+	 list << "hi" << "he" << "hu"  << "hy";
+	 list << "ja";
+	 list << "it";
+	 list << "ka" << "ko" << "kk";
+	 list << "lv" << "lt";
+	 list << "mn";
+	 list << "no" << "nl";
+	 list << "pt" << "pl";
+	 list << "ru" << "ro";
+	 list << "sr" << "sk" << "sl" << "sv";
+	 list << "tr" << "th" << "tr";
+	 list << "uk" << "uz";
+	 list << "vi";
+	 list << "zh";
+	 combo1->addItems(list);
+	 combo2->addItems(list);
+     combo1->setCurrentIndex(combo1->findText("en"));
+     combo2->setCurrentIndex(combo2->findText("en"));
+}
+
+void MainWindow::writeSettings(){
+     QSettings settings("Dualword", "Dualword-wiki");
+     settings.beginGroup("MainWindow");
+     settings.setValue("lang1", combo1->currentText());
+     settings.setValue("lang2", combo2->currentText());
+     settings.endGroup();
+ }
+
+ void MainWindow::readSettings(){
+     QSettings settings("Dualword", "Dualword-wiki");
+     settings.beginGroup("MainWindow");
+	 if(settings.contains("lang1") & settings.contains("lang2")){
+	     combo1->setCurrentIndex(combo1->findText(settings.value("lang1").toString()));
+	     combo2->setCurrentIndex(combo2->findText(settings.value("lang2").toString()));
+	 }
+     settings.endGroup();
+ }

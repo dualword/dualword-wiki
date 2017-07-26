@@ -17,6 +17,7 @@
 #include "app/DualwordWikiApp.h"
 #include "Tab.h"
 #include "BrowserForm.h"
+#include "DualBrowserForm.h"
 
 Tab::Tab(QWidget *p) : QTabWidget(p) {
 	setTabsClosable(true);
@@ -26,10 +27,10 @@ Tab::Tab(QWidget *p) : QTabWidget(p) {
     setMovable(true);
     connect(this, SIGNAL(currentChanged (int)), this, SLOT(currentChanged(int)));
     connect(this, SIGNAL(tabCloseRequested (int)), this, SLOT(closeTab(int)));
-    connect(this, SIGNAL(NewTab()), this, SLOT(createTab()));
+    connect(this, SIGNAL(NewBrowser()), this, SLOT(createBrowser()));
+    connect(this, SIGNAL(NewDualBrowser()), this, SLOT(createDualBrowser()));
     connect(this, SIGNAL(customContextMenuRequested(QPoint)),
     		this, SLOT(contextMenuRequested(QPoint)));
-
 }
 
 Tab::~Tab() {
@@ -38,23 +39,30 @@ Tab::~Tab() {
 
 void Tab::contextMenuRequested(const QPoint &position) {
 	QMenu menu;
-    menu.addAction(tr("New Browser Tab"), this, SIGNAL(NewTab()));
+    menu.addAction(tr("Browser Tab"), this, SIGNAL(NewBrowser()));
+    menu.addAction(tr("Dual Browser Tab"), this, SIGNAL(NewDualBrowser()));
     menu.exec(QCursor::pos());
 }
 
-int Tab::createTab(){
+int Tab::createBrowser(){
 	BrowserForm *f = new BrowserForm(this);
 	f->home();
 	return addTab(f,"Browser");
 }
 
+int Tab::createDualBrowser(){
+	DualBrowserForm *f = new DualBrowserForm(this);
+	f->home();
+	return addTab(f,"Dual Browser");
+}
+
 void Tab::closeTab(int i){
 	if(this->count() == 1)
-		createTab();
+		createBrowser();
 	removeTab(i);
 }
 
 void Tab::currentChanged (int index){
 	Form* f = qobject_cast<Form*>(currentWidget());
-	Q_EMIT currentForm(f);
+	emit currentForm(f);
 }

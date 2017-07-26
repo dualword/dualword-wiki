@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>error.html</file>
+    <file>empty.html</file>
+    <file>dual.html</file>
+    <file>article_not_found.html</file>
+</qresource>
+</RCC>

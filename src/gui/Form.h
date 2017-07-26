@@ -38,6 +38,13 @@ public slots:
 	virtual void reload () {};
 	virtual void stop () {};
 	virtual void home () {};
+	virtual void changeLang1 (const QString&) {};
+	virtual void changeLang2 (const QString&) {};
+
+signals:
+	void titleChanged (const QString&);
+	void urlChanged (const QUrl&);
+	void statusBarMessage (const QString&);
 
 };
 

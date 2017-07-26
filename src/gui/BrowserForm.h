@@ -18,8 +18,6 @@
 #define SRC_GUI_BROWSERFORM_H_
 
 #include "Form.h"
-#include <QScopedPointer>
-#include <QObject>
 
 class Browser;
 
@@ -44,13 +42,8 @@ public slots:
 	void stop ();
 	void home();
 
-signals:
-	void titleChanged (const QString&);
-	void urlChanged (const QUrl&);
-	void statusBarMessage (const QString&);
-
 private:
-	QScopedPointer<Browser> browser;
+	Browser* browser;
 
 };
 
