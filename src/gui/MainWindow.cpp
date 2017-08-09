@@ -16,6 +16,8 @@
 
 #include "MainWindow.h"
 #include "Form.h"
+#include "BrowserForm.h"
+#include "DualBrowserForm.h"
 
 MainWindow::MainWindow(QWidget *p, Qt::WindowFlags f) : QMainWindow(p, f),
 	editUrl(new QLineEdit(this)), combo1(new QComboBox(this)), combo2(new QComboBox(this)),
@@ -31,8 +33,9 @@ MainWindow::MainWindow(QWidget *p, Qt::WindowFlags f) : QMainWindow(p, f),
     toolBar->insertWidget(actionNext,editUrl);
     toolBar->insertWidget(actionNext,combo1);
     toolBar->insertWidget(actionNext,combo2);
-    fillCombo();
     setSlots();
+    fillCombo();
+
 }
 
 MainWindow::~MainWindow() {
@@ -44,12 +47,17 @@ void MainWindow::init(){
     tab->createBrowser();
 }
 
+Tab* MainWindow::getTab(){
+	return tab;
+}
+
 void MainWindow::closeEvent(QCloseEvent *event) {
 	writeSettings();
     event->accept();
 }
 
 void MainWindow::exit() {
+	writeSettings();
 	qApp->quit();
 }
 
@@ -69,12 +77,17 @@ void MainWindow::currentForm(Form* f) {
 	    QObject::disconnect(actionReload,SIGNAL(triggered()), form, SLOT(reload()));
 	    QObject::disconnect(actionStop,SIGNAL(triggered()), form, SLOT(stop()));
 	    QObject::disconnect(actionHome,SIGNAL(triggered()), form, SLOT(home()));
+	    QObject::disconnect(actionNext,SIGNAL(triggered()), form,SLOT(next()));
 	    QObject::disconnect(form,SIGNAL(urlChanged(const QUrl&)),
 	    		this, SLOT(urlChanged(const QUrl&)));
 	    QObject::disconnect(form,SIGNAL(titleChanged(const QString&)),
 	    		this, SLOT(titleChanged(const QString&)));
 	    QObject::disconnect(form,SIGNAL(statusBarMessage(const QString&)),
 	    		statusBar(), SLOT(showMessage(const QString&)));
+	    QObject::disconnect(form,SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+	    QObject::disconnect(form,SIGNAL(loadStarted()), this,SLOT(loadStarted()));
+		QObject::disconnect(combo1,SIGNAL(currentIndexChanged(const QString&)),
+				form, SLOT(changeLang1(const QString&)));
 		QObject::disconnect(combo2,SIGNAL(currentIndexChanged(const QString&)),
 				form, SLOT(changeLang2(const QString&)));
 	}
@@ -84,17 +97,23 @@ void MainWindow::currentForm(Form* f) {
     QObject::connect(actionReload,SIGNAL(triggered()), form, SLOT(reload()));
     QObject::connect(actionStop,SIGNAL(triggered()), form, SLOT(stop()));
     QObject::connect(actionHome,SIGNAL(triggered()), form, SLOT(home()));
+    QObject::connect(actionNext,SIGNAL(triggered()), form,SLOT(next()));
     QObject::connect(form,SIGNAL(urlChanged(const QUrl&)),
     		this, SLOT(urlChanged(const QUrl&)));
     QObject::connect(form,SIGNAL(titleChanged(const QString&)),
     		this, SLOT(titleChanged(const QString&)));
     QObject::connect(form,SIGNAL(statusBarMessage(const QString&)),
     		statusBar(), SLOT(showMessage(const QString&)));
+    QObject::connect(form,SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+    QObject::connect(form,SIGNAL(loadStarted()), this, SLOT(loadStarted()));
+	QObject::connect(combo1,SIGNAL(currentIndexChanged(const QString&)),
+			form, SLOT(changeLang1(const QString&)));
 	QObject::connect(combo2,SIGNAL(currentIndexChanged(const QString&)),
 			form, SLOT(changeLang2(const QString&)));
 
 	titleChanged(form->getTitle());
 	urlChanged(form->getUrl());
+	actionNext->setEnabled(form->isNext());
 }
 
 void MainWindow::titleChanged(const QString& title) {
@@ -113,32 +132,31 @@ void MainWindow::urlChanged(const QUrl& url) {
 	editUrl->setCursorPosition(0);
 }
 
-void MainWindow::currentIndexChanged (const QString& text){
-	if(combo1->currentText() == combo2->currentText()) return;
-}
-
 void MainWindow::fillCombo(){
 	QStringList list;
 	 list << "ar" << "az";
-	 list << "bg" << "be";
-	 list << "ca";
-	 list << "de" << "da";
-	 list << "en" << "es" << "el" << "et" << "eu";
-	 list << "fr" << "fa" << "fi";
-	 list << "hi" << "he" << "hu"  << "hy";
+	 list << "be" << "bg";
+	 list << "ca" << "ce" << "ceb" << "cs";
+	 list << "da" << "de";
+	 list << "en" << "es" << "el" << "eo" << "et" << "eu";
+	 list << "fa" << "fr" << "fi";
+	 list << "gl";
+	 list << "hi" << "he" << "hr" << "hu"  << "hy";
+	 list << "it" << "id";
 	 list << "ja";
-	 list << "it";
 	 list << "ka" << "ko" << "kk";
-	 list << "lv" << "lt";
-	 list << "mn";
-	 list << "no" << "nl";
-	 list << "pt" << "pl";
-	 list << "ru" << "ro";
-	 list << "sr" << "sk" << "sl" << "sv";
-	 list << "tr" << "th" << "tr";
-	 list << "uk" << "uz";
+	 list << "la" << "lv" << "lt";
+	 list << "min" << "mn" << "ms";
+	 list << "nn" << "no" << "nl";
+	 list << "pl" << "pt";
+	 list << "ro" << "ru";
+	 list << "simple" << "sh" << "sr" << "sk" << "sl" << "sv";
+	 list << "ta" << "tr" << "th";
+	 list << "uk" << "ur" << "uz";
 	 list << "vi";
+	 list << "war";
 	 list << "zh";
+
 	 combo1->addItems(list);
 	 combo2->addItems(list);
      combo1->setCurrentIndex(combo1->findText("en"));
@@ -162,3 +180,27 @@ void MainWindow::writeSettings(){
 	 }
      settings.endGroup();
  }
+
+void MainWindow::loadFinished(bool ok){
+	actionStop->setEnabled(false);
+	actionReload->setEnabled(true);
+}
+
+void MainWindow::loadStarted(){
+	actionStop->setEnabled(true);
+	actionReload->setEnabled(false);
+}
+
+void MainWindow::showHistory(){
+	menuHistory->clear();
+	QWebHistory* h;
+	if(!form) return;
+	h = form->getHistory();
+	if(!h) return;
+	for(int i=h->items().size()-1; i>=0; i--){
+		QAction *a = new QAction(h->itemAt(i).icon(), h->itemAt(i).title(), menuHistory);
+		a->setData(i);
+		QObject::connect(a, SIGNAL(triggered()), form, SLOT(loadHistory()));
+		menuHistory->addAction(a);
+	}
+}

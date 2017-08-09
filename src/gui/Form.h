@@ -18,8 +18,10 @@
 #define FORM_H_
 
 #include <QtGui>
+#include <QWebHistory>
 
 #include "app/DualwordWikiApp.h"
+#include "MainWindow.h"
 
 class Form : public QWidget {
      Q_OBJECT
@@ -29,22 +31,29 @@ public:
 	virtual ~Form();
 	virtual QString getTitle() const = 0;
 	virtual QString getUrl() const = 0;
-	virtual bool canChangeUrl() = 0;
 
 public slots:
 	virtual void load(const QString&) {};
+	virtual void load(const QUrl&, int) {};
+	virtual void slotLoadFinished(bool) {};
 	virtual void back () {};
 	virtual void forward () {};
 	virtual void reload () {};
 	virtual void stop () {};
 	virtual void home () {};
+	virtual void next () {};
+	virtual bool isNext () {return false;};
 	virtual void changeLang1 (const QString&) {};
 	virtual void changeLang2 (const QString&) {};
+	virtual QWebHistory* getHistory(){return 0;};
+	virtual void loadHistory(){};
 
 signals:
 	void titleChanged (const QString&);
 	void urlChanged (const QUrl&);
 	void statusBarMessage (const QString&);
+	void loadFinished(bool);
+	void loadStarted();
 
 };
 

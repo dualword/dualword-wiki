@@ -23,6 +23,7 @@ DualwordWikiApp::DualwordWikiApp(int &argc, char **argv) : QApplication(argc, ar
 		QApplication::setApplicationVersion(_VER);
 	#endif
 	QApplication::setQuitOnLastWindowClosed(true);
+	qsrand(QTime::currentTime().msec());
 }
 
 DualwordWikiApp::~DualwordWikiApp() {

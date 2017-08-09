@@ -18,6 +18,7 @@
 #define MAINWINDOW_H_
 
 #include <QtGui>
+#include <QUrl>
 #include <QMainWindow>
 
 #include "ui_MainWindow.h"
@@ -29,6 +30,7 @@ public:
 	MainWindow(QWidget *p=0, Qt::WindowFlags f=0);
 	virtual ~MainWindow();
 	void init();
+	Tab* getTab();
 
 protected:
     void closeEvent(QCloseEvent *);
@@ -38,6 +40,8 @@ public slots:
 	void urlChanged(const QUrl&);
 	const QString lang1() const {return combo1->currentText();};
 	const QString lang2() const {return combo2->currentText();};
+	void loadFinished(bool);
+	void loadStarted();
 
 private slots:
 	void setSlots();
@@ -45,10 +49,10 @@ private slots:
 	void exit();
 	void titleChanged (const QString& title);
 	void load();
-	void currentIndexChanged (const QString&);
 	void fillCombo();
 	void writeSettings();
 	void readSettings();
+	void showHistory();
 
 private:
 	QLineEdit* editUrl;

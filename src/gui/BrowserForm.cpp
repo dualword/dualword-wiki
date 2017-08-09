@@ -22,13 +22,15 @@ BrowserForm::BrowserForm(QWidget *p) : Form(p), browser(new Browser(this)) {
 	box->addWidget(browser);
 	setLayout(box);
     QObject::connect(browser,SIGNAL(titleChanged(const QString&)),
-    		this, SIGNAL(titleChanged(const QString&)));
+    		SIGNAL(titleChanged(const QString&)));
     QObject::connect(browser,SIGNAL(urlChanged(const QUrl&)),
-    		this, SIGNAL(urlChanged(const QUrl&)));
+    		SIGNAL(urlChanged(const QUrl&)));
     QObject::connect(browser->page(), SIGNAL(linkHovered(const QString&, const QString&, const QString&)),
-    		this, SIGNAL(statusBarMessage(const QString&)));
+    		SIGNAL(statusBarMessage(const QString&)));
     QObject::connect(browser->page(),SIGNAL(statusBarMessage(const QString&)),
-    		this, SIGNAL(statusBarMessage(const QString&)));
+    		SIGNAL(statusBarMessage(const QString&)));
+    QObject::connect(browser,SIGNAL(loadFinished(bool)), SIGNAL(loadFinished(bool)));
+    QObject::connect(browser,SIGNAL(loadStarted()), SIGNAL(loadStarted()));
 
 }
 
@@ -42,10 +44,6 @@ QString BrowserForm::getTitle() const{
 
 QString BrowserForm::getUrl() const{
 	return browser->page()->currentFrame()->url().toString();
-}
-
-bool BrowserForm::canChangeUrl(){
-	return true;
 }
 
 void BrowserForm::load(const QString& url){
@@ -72,3 +70,17 @@ void BrowserForm::stop (){
 void BrowserForm::home(){
 	browser->load(QUrl("http://www.wikipedia.org"));
 }
+
+void BrowserForm::next (){
+
+}
+
+QWebHistory* BrowserForm::getHistory(){
+	return browser->page()->history();
+}
+
+void BrowserForm::loadHistory(){
+	QAction *a = qobject_cast<QAction*>(sender());
+	browser->history()->goToItem(browser->history()->itemAt(a->data().toInt()));
+}
+

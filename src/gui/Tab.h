@@ -19,6 +19,7 @@
 
 #include <QObject>
 #include <QTabWidget>
+#include <QUrl>
 
 class Form;
 
@@ -35,10 +36,11 @@ signals:
 	void currentForm(Form*);
 
 public slots:
-	int createBrowser();
-	int createDualBrowser();
+	int createBrowser(Form* f = 0);
+	int createDualBrowser(Form* f = 0);
 	void closeTab(int);
 	void currentChanged (int index);
+	void setToolTip(const QString&);
 
 private slots:
     void contextMenuRequested(const QPoint &position);

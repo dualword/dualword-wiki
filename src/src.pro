@@ -16,10 +16,12 @@ HEADERS += \
 	app/NetworkAccessManager.h \
 	gui/MainWindow.h \
 	gui/Browser.h \
+	gui/DualBrowser.h \
 	gui/Tab.h \
 	gui/Form.h \
 	gui/BrowserForm.h \
-	gui/DualBrowserForm.h
+	gui/DualBrowserForm.h \
+	gui/Get.h
 			
 SOURCES += \
 	app/main.cpp \
@@ -28,10 +30,12 @@ SOURCES += \
 	gui/slots.cpp \
 	gui/MainWindow.cpp \
 	gui/Browser.cpp \
+	gui/DualBrowser.cpp \
 	gui/Tab.cpp \
 	gui/Form.cpp \
 	gui/BrowserForm.cpp \
-	gui/DualBrowserForm.cpp
+	gui/DualBrowserForm.cpp \
+	gui/Get.cpp
 
 FORMS += \
 	gui/MainWindow.ui

@@ -17,12 +17,9 @@
 #include "gui/MainWindow.h"
 
 void MainWindow::setSlots() {
-    QObject::connect(actionQuit,SIGNAL(triggered()), this, SLOT(exit()));
-    QObject::connect(actionAbout,SIGNAL(triggered()), this, SLOT(showAbout()));
-    QObject::connect(tab,SIGNAL(currentForm(Form*)), this, SLOT(currentForm(Form*)));
-	QObject::connect(editUrl,SIGNAL(returnPressed()), this, SLOT(load()));
-	QObject::connect(combo1,SIGNAL(currentIndexChanged(const QString&)),
-			this, SLOT(currentIndexChanged(const QString&)));
-	QObject::connect(combo2,SIGNAL(currentIndexChanged(const QString&)),
-			this, SLOT(currentIndexChanged(const QString&)));
+    QObject::connect(actionQuit,SIGNAL(triggered()), SLOT(exit()));
+    QObject::connect(actionAbout,SIGNAL(triggered()), SLOT(showAbout()));
+    QObject::connect(tab,SIGNAL(currentForm(Form*)), SLOT(currentForm(Form*)));
+	QObject::connect(editUrl,SIGNAL(returnPressed()), SLOT(load()));
+	QObject::connect(menuHistory,SIGNAL(aboutToShow()), SLOT(showHistory()));
 }

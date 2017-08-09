@@ -25,12 +25,12 @@ Tab::Tab(QWidget *p) : QTabWidget(p) {
 	setContextMenuPolicy(Qt::CustomContextMenu);
     setTabsClosable(true);
     setMovable(true);
-    connect(this, SIGNAL(currentChanged (int)), this, SLOT(currentChanged(int)));
-    connect(this, SIGNAL(tabCloseRequested (int)), this, SLOT(closeTab(int)));
-    connect(this, SIGNAL(NewBrowser()), this, SLOT(createBrowser()));
-    connect(this, SIGNAL(NewDualBrowser()), this, SLOT(createDualBrowser()));
+    connect(this, SIGNAL(currentChanged (int)), SLOT(currentChanged(int)));
+    connect(this, SIGNAL(tabCloseRequested (int)), SLOT(closeTab(int)));
+    connect(this, SIGNAL(NewBrowser()), SLOT(createBrowser()));
+    connect(this, SIGNAL(NewDualBrowser()), SLOT(createDualBrowser()));
     connect(this, SIGNAL(customContextMenuRequested(QPoint)),
-    		this, SLOT(contextMenuRequested(QPoint)));
+    		SLOT(contextMenuRequested(QPoint)));
 }
 
 Tab::~Tab() {
@@ -44,15 +44,31 @@ void Tab::contextMenuRequested(const QPoint &position) {
     menu.exec(QCursor::pos());
 }
 
-int Tab::createBrowser(){
-	BrowserForm *f = new BrowserForm(this);
-	f->home();
+int Tab::createBrowser(Form* form){
+	Form *f;
+	if(form){
+		f = form;
+	}else{
+		f = new BrowserForm(this);
+	}
+    QObject::connect(f,SIGNAL(titleChanged(const QString&)), SLOT(setToolTip(const QString&)));
+    if(!form){
+    	f->home();
+    }
 	return addTab(f,"Browser");
 }
 
-int Tab::createDualBrowser(){
-	DualBrowserForm *f = new DualBrowserForm(this);
-	f->home();
+int Tab::createDualBrowser(Form* form){
+	Form *f;
+	if(form){
+		f = form;
+	}else{
+		f = new DualBrowserForm(this);
+	}
+    QObject::connect(f,SIGNAL(titleChanged(const QString&)), SLOT(setToolTip(const QString&)));
+    if(!form){
+    	f->home();
+    }
 	return addTab(f,"Dual Browser");
 }
 
@@ -65,4 +81,13 @@ void Tab::closeTab(int i){
 void Tab::currentChanged (int index){
 	Form* f = qobject_cast<Form*>(currentWidget());
 	emit currentForm(f);
+}
+
+void Tab::setToolTip(const QString& s){
+	Form *f = qobject_cast<Form*>(sender());
+	int i = indexOf(f);
+	if (i != -1) {
+		setTabText(i, f->getTitle());
+		setTabToolTip(i, f->getUrl());
+	}
 }

@@ -41,7 +41,13 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuHistory">
+    <property name="title">
+     <string>History</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuHistory"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
@@ -109,10 +115,13 @@
   </action>
   <action name="actionNext">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Next</string>
+   </property>
+   <property name="toolTip">
+    <string>Next page</string>
    </property>
   </action>
  </widget>

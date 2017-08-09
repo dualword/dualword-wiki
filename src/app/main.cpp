@@ -16,8 +16,16 @@
 
 #include "DualwordWikiApp.h"
 
+#include <iostream>
+
 int main(int argc, char *argv[]) {
 	DualwordWikiApp app(argc, argv);
-	app.start();
-	return app.exec();
+	try {
+		app.start();
+		return app.exec();
+	} catch (std::exception& e) {
+		std::cerr << "Dualword-wiki:" << e.what() << std::endl;
+	}catch (...) {
+		std::cerr << "Dualword-wiki:Uncaught exception" << std::endl;
+	}
 }

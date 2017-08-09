@@ -31,8 +31,6 @@ public:
 public:
 	virtual QString getTitle() const;
 	virtual QString getUrl() const;
-	virtual bool canChangeUrl();
-
 
 public slots:
 	void load(const QString&);
@@ -41,6 +39,9 @@ public slots:
 	void reload ();
 	void stop ();
 	void home();
+	void next ();
+	QWebHistory* getHistory();
+	void loadHistory();
 
 private:
 	Browser* browser;

@@ -15,105 +15,40 @@
 */
 
 #include "DualBrowserForm.h"
-#include "Browser.h"
-#include "MainWindow.h"
-#include "app/NetworkAccessManager.h"
+#include "DualBrowser.h"
 #include <QWebFrame>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-
-#include <QtXml>
-#include <QXmlQuery>
-
-GetTitle::GetTitle(QObject *p, const QString& name, Browser *w) : QObject(p),
-	nam(new NetworkAccessManager(this)), name(name), web(w){
-	web->stop();
-	connect(nam, SIGNAL(finished(QNetworkReply *)), SLOT(finished(QNetworkReply *)));
-}
-
-GetTitle::~GetTitle() {
-
-}
-
-void GetTitle::get(){
-	QNetworkRequest req;
-	req.setUrl(QUrl(title.arg(DualwordWikiApp::instance()->window()->lang1()).
-						arg(name).arg(DualwordWikiApp::instance()->window()->lang2())));
-	nam->get(req);
-}
-
-void GetTitle::finished(QNetworkReply * reply){
-	QBuffer device;
-	QString t;
-	QXmlQuery query;
-	QString xml;
-	bool ok;
-	xml =QString::fromUtf8(reply->readAll());
-	device.setData(xml.toUtf8());
-	device.open(QIODevice::ReadOnly);
-	switch (reply->error()) {
-	    case QNetworkReply::NoError:
-			query.bindVariable("inputDocument", &device);
-			query.setQuery("doc($inputDocument)/api/query/pages/page/langlinks/ll/string()");
-			query.evaluateTo(&t);
-			if(t.trimmed().length() >= 1){
-				web->load(QUrl::fromUserInput(api.arg(DualwordWikiApp::instance()->window()->lang2()).arg(t)));
-				break;
-			}
-			query.setQuery("doc($inputDocument)/api/query/pages/page/@_idx/string()");
-			query.evaluateTo(&t);
-			if(t.length() >= 1){
-				int i = t.toInt(&ok);
-				if(ok && i == -1){
-					web->setHtml((DualwordWikiApp::getHtml(":/article_not_found.html")).arg(name).arg(reply->url().host()));
-					break;
-				}else{
-					web->setHtml((DualwordWikiApp::getHtml(":/article_not_found.html")).arg(name).arg(DualwordWikiApp::instance()->window()->lang2()+".wikipedia.org"));
-					break;
-				}
-			}
-			query.setQuery("doc($inputDocument)/api/query/pages/page/@title/string()");
-			query.evaluateTo(&t);
-			if(t.trimmed().length() >= 1){
-				web->load(QUrl::fromUserInput(QUrl::fromEncoded((api.arg(DualwordWikiApp::instance()->window()->lang2()).arg(t)).toUtf8()).toString()));
-				break;
-			}
-	      break;
-	    default:
-	    	web->setHtml((DualwordWikiApp::getHtml(":/error.html")).arg(reply->errorString()).arg(reply->url().host()));
-	}
-}
 
 DualBrowserForm::DualBrowserForm(QWidget *p) : Form(p),
-	webview1(new Browser(this)), webview2(new Browser(this)), req1(0) {
-	webview1->page()->currentFrame()->setScrollBarPolicy(Qt::Vertical,Qt::ScrollBarAlwaysOn);
-	webview2->page()->currentFrame()->setScrollBarPolicy(Qt::Vertical,Qt::ScrollBarAlwaysOn);
-	webview1->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-	webview2->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+	web1(new DualBrowser(this,1)), web2(new DualBrowser(this,2)), nextUrl("") {
+	web1->setLang(DualwordWikiApp::instance()->window()->lang1());
+	web2->setLang(DualwordWikiApp::instance()->window()->lang2());
 	QVBoxLayout *box = new QVBoxLayout(this);
 	QSplitter *sp = new QSplitter(this);
-	//sp->setOrientation(Qt::Vertical);
-	sp->addWidget(webview1);
-	sp->addWidget(webview2);
+	sp->addWidget(web1);
+	sp->addWidget(web2);
 	box->addWidget(sp);
 	setLayout(box);
-    QObject::connect(webview1,SIGNAL(titleChanged(const QString&)),
-    		this, SIGNAL(titleChanged(const QString&)));
-    QObject::connect(webview1,SIGNAL(urlChanged(const QUrl&)),
-    		this, SIGNAL(urlChanged(const QUrl&)));
-    QObject::connect(webview1->page(), SIGNAL(linkHovered(const QString&, const QString&, const QString&)),
-    		this, SIGNAL(statusBarMessage(const QString&)));
-    QObject::connect(webview1->page(),SIGNAL(statusBarMessage(const QString&)),
-    		this, SIGNAL(statusBarMessage(const QString&)));
-    QObject::connect(webview2->page(), SIGNAL(linkHovered(const QString&, const QString&, const QString&)),
-    		this, SIGNAL(statusBarMessage(const QString&)));
-    QObject::connect(webview2->page(),SIGNAL(statusBarMessage(const QString&)),
-    		this, SIGNAL(statusBarMessage(const QString&)));
-	QObject::connect(webview1->page(),SIGNAL(linkClicked(QUrl)),
-			this, SLOT(linkClicked1(QUrl)));
-	QObject::connect(webview2->page(),SIGNAL(linkClicked(QUrl)),
-			this, SLOT(linkClicked2(QUrl)));
-
+    QObject::connect(web1,SIGNAL(titleChanged(const QString&)),
+    		SIGNAL(titleChanged(const QString&)));
+    QObject::connect(web1,SIGNAL(urlChanged(const QUrl&)),
+    		SIGNAL(urlChanged(const QUrl&)));
+    QObject::connect(web1,SIGNAL(statusBarMessage(const QString&)),
+    		SIGNAL(statusBarMessage(const QString&)));
+    QObject::connect(web2,SIGNAL(statusBarMessage(const QString&)),
+    		SIGNAL(statusBarMessage(const QString&)));
+    QObject::connect(web1->page(), SIGNAL(linkHovered(const QString&, const QString&, const QString&)),
+    		SIGNAL(statusBarMessage(const QString&)));
+    QObject::connect(web1->page(),SIGNAL(statusBarMessage(const QString&)),
+    		SIGNAL(statusBarMessage(const QString&)));
+    QObject::connect(web2->page(), SIGNAL(linkHovered(const QString&, const QString&, const QString&)),
+    		SIGNAL(statusBarMessage(const QString&)));
+    QObject::connect(web2->page(),SIGNAL(statusBarMessage(const QString&)),
+    		SIGNAL(statusBarMessage(const QString&)));
+	QObject::connect(web1,SIGNAL(linkClicked(QUrl)), SLOT(linkClicked1(QUrl)));
+	QObject::connect(web2,SIGNAL(linkClicked(QUrl)), SLOT(linkClicked2(QUrl)));
+    QObject::connect(web1,SIGNAL(loadFinished(bool)), SIGNAL(loadFinished(bool)));
+    QObject::connect(web1,SIGNAL(loadFinished(bool)), SLOT(slotLoadFinished(bool)));
+    QObject::connect(web1,SIGNAL(loadStarted()), SIGNAL(loadStarted()));
 }
 
 DualBrowserForm::~DualBrowserForm() {
@@ -121,78 +56,173 @@ DualBrowserForm::~DualBrowserForm() {
 }
 
 QString DualBrowserForm::getTitle() const{
-	return "";
+	QString t = web1->page()->currentFrame()->title();
+	return t.mid(t.lastIndexOf("/")+1);
 }
 
 QString DualBrowserForm::getUrl() const{
-	QString url = webview1->page()->currentFrame()->url().toString();
+	QString url = web1->page()->currentFrame()->url().toString();
 	return url.mid(url.lastIndexOf("/")+1);
 }
 
-bool DualBrowserForm::canChangeUrl(){
-	return true;
-}
-
-void DualBrowserForm::load(const QString& name){
-	QUrl url(QUrl::fromUserInput(name));
-	if(url.host().contains(".")){
-		emit statusBarMessage("Blocked:" + url.host());
-		return;
-	}
-	//if(!name.contains(QRegExp("[a-zA-Z0-9\\s_\\xhhhh]"))) return;
-	QString tmp(api.arg(DualwordWikiApp::instance()->window()->lang1()).arg(name));
-	webview1->load(QUrl::fromEncoded(tmp.toUtf8()));
-	req1.reset(new GetTitle(this, name, webview2));
-	req1->get();
-}
-
 void DualBrowserForm::back (){
-	webview1->back();
-	webview2->back();
+	web1->back();
+	web2->back();
 }
 
 void DualBrowserForm::forward (){
-	webview1->forward();
-	webview2->forward();
+	web1->forward();
+	web2->forward();
 }
 
 void DualBrowserForm::reload (){
-	webview1->reload();
-	webview2->reload();
+	web1->reload();
+	web2->reload();
 }
 
 void DualBrowserForm::stop (){
-	webview1->stop();
-	webview2->stop();
+	web1->stop();
+	web2->stop();
 }
 
 void DualBrowserForm::home(){
-	webview1->load(QUrl::fromEncoded(api.arg(DualwordWikiApp::instance()->window()->lang1()).arg("Main Page").toUtf8()));
-	webview2->load(QUrl::fromEncoded(api.arg(DualwordWikiApp::instance()->window()->lang2()).arg("Main Page").toUtf8()));
+	web1->getPage(DualwordWikiApp::instance()->window()->lang1(),
+			DualwordWikiApp::instance()->window()->lang1(), "Main Page");
+	web2->getPage(DualwordWikiApp::instance()->window()->lang2(),
+			DualwordWikiApp::instance()->window()->lang2(), "Main Page");
+}
+
+void DualBrowserForm::load(const QString& str){
+	QString name = str.mid(str.lastIndexOf("/")+1, str.lastIndexOf("#")-(str.lastIndexOf("/")+1));
+	if(name.trimmed().length() <= 0) return;
+	if(web1->getLang() == DualwordWikiApp::instance()->window()->lang1()){
+		web1->getPage(DualwordWikiApp::instance()->window()->lang1(),
+				DualwordWikiApp::instance()->window()->lang1(), name);
+	}else{
+		web1->getTitle(web1->getLang(), DualwordWikiApp::instance()->window()->lang1(), name);
+	}
+	web2->getTitle(DualwordWikiApp::instance()->window()->lang1(),
+			DualwordWikiApp::instance()->window()->lang2(), name);
+	web1->setFocus();
+}
+
+void DualBrowserForm::load(const QUrl& url, int id){
+	QString name = getValidUrl(url.toString());
+	QString lang = getLinkLang(url.toString());
+	if(id == web1->getId()){
+		if(lang == DualwordWikiApp::instance()->window()->lang1()){
+			web1->getPage(lang,	DualwordWikiApp::instance()->window()->lang1(), name);
+		}else{
+			web1->getTitle(lang, DualwordWikiApp::instance()->window()->lang1(), name);
+		}
+		web2->getTitle(lang, DualwordWikiApp::instance()->window()->lang2(), name);
+	}else if (id == web2->getId()){
+		if(lang == DualwordWikiApp::instance()->window()->lang2()){
+			web2->getPage(lang,	DualwordWikiApp::instance()->window()->lang2(), name);
+		}else{
+			web2->getTitle(lang, DualwordWikiApp::instance()->window()->lang2(), name);
+		}
+		web1->getTitle(lang, DualwordWikiApp::instance()->window()->lang1(), name);
+	}
 }
 
 void DualBrowserForm::linkClicked1(const QUrl& url){
-	if(!url.host().toLower().contains("wikipedia.org")){
-		emit statusBarMessage("Blocked:" + url.host());
-		return;
+	QString name = getValidUrl(url.toString());
+	QString lang = getLinkLang(url.toString());
+	if(lang == DualwordWikiApp::instance()->window()->lang1()){
+		web1->getPage(lang,	DualwordWikiApp::instance()->window()->lang1(), name);
+	}else{
+		web1->getTitle(lang, DualwordWikiApp::instance()->window()->lang1(), name);
 	}
-	QString name = url.toString().mid(url.toString().lastIndexOf("/")+1);
-	if(name.trimmed().length()<=0) return;
-	QString tmp(api.arg(DualwordWikiApp::instance()->window()->lang1()).arg(name));
-	webview1->load(QUrl::fromEncoded(tmp.toUtf8()));
-	req1.reset(new GetTitle(this, name, webview2));
-	req1->get();
+	web2->getTitle(lang, DualwordWikiApp::instance()->window()->lang2(), name);
 }
 
 void DualBrowserForm::linkClicked2(const QUrl& url){
-
+	QString name = getValidUrl(url.toString());
+	QString lang = getLinkLang(url.toString());
+	if(lang == DualwordWikiApp::instance()->window()->lang2()){
+		web2->getPage(lang,	DualwordWikiApp::instance()->window()->lang2(), name);
+	}else{
+		web2->getTitle(lang, DualwordWikiApp::instance()->window()->lang2(), name);
+	}
+	web1->getTitle(lang, DualwordWikiApp::instance()->window()->lang1(), name);
 }
 
-void DualBrowserForm::changeLang1(const QString& s){
-
+void DualBrowserForm::changeLang1(const QString& lang1){
+	web1->getTitle(web1->getLang(),lang1, getUrl());
+	web1->setLang(lang1);
 }
 
-void DualBrowserForm::changeLang2(const QString& s){
-	req1.reset(new GetTitle(this, getUrl(), webview2));
-	req1->get();
+void DualBrowserForm::changeLang2(const QString& lang2){
+	web2->getTitle(web1->getLang(),lang2, getUrl());
+	web2->setLang(lang2);
+}
+
+void DualBrowserForm::next (){
+	if(nextUrl.length() == 0) return;
+	if(web1->getLang() == DualwordWikiApp::instance()->window()->lang1()){
+		web1->getPage(web1->getLang(),DualwordWikiApp::instance()->window()->lang1(),nextUrl);
+	}else{
+		web1->getTitle(web1->getLang(),DualwordWikiApp::instance()->window()->lang1(),nextUrl);
+	}
+	web2->getTitle(web1->getLang(),DualwordWikiApp::instance()->window()->lang2(),nextUrl);
+}
+
+void DualBrowserForm::slotLoadFinished(bool ok){
+	QStringList list;
+	QWebFrame *frame = web1->page()->mainFrame();
+	if(!frame) return;
+	QWebElement doc = frame->documentElement();
+	if(doc.isNull()) return;
+	QWebElementCollection elements = doc.findAll("a[rel=\"mw:WikiLink\"]");
+	for(int i=0;elements.count();i++){
+		if(i>1000) break;
+		if(!(elements[i].attribute("href").startsWith("./"))) continue;
+		if(elements[i].attribute("href").trimmed().length()<=0) continue;
+		if(elements[i].attribute("href").contains(QRegExp("[\\[:#]"))) continue;
+		list << elements[i].attribute("href");
+	}
+	if(list.size()>0){
+		nextUrl = list.value(qrand() % list.size()).replace("./", "");
+	}
+}
+
+QString DualBrowserForm::getValidUrl(const QString& url){
+	 QRegExp reg("(?:\\s*)wikipedia\\.org/wiki/([^#]+)");
+	 int pos = reg.indexIn(url);
+	 if (pos > -1) {
+		 return reg.cap(1);
+	 }
+	 return "";
+}
+
+QString DualBrowserForm::getLinkLang(const QString& link){
+	 QRegExp reg("(?:\\s*)([a-zA-Z]{2,2})\\.wikipedia\\.org/wiki/.*");
+	 int pos = reg.indexIn(link);
+	 if (pos > -1) {
+		 return reg.cap(1);
+	 }
+	 return "";
+}
+
+bool DualBrowserForm::scroll(const QUrl& url, Browser* web){
+	if(url.hasFragment() & (getUrl() == getValidUrl(url.toString()))){
+		web->page()->mainFrame()->scrollToAnchor(url.fragment());
+		if(web1 == web){
+
+		}else{
+
+		}
+		return true;
+	}
+	return false;
+}
+
+QWebHistory* DualBrowserForm::getHistory(){
+	return web1->page()->history();
+}
+
+void DualBrowserForm::loadHistory(){
+	QAction *a = qobject_cast<QAction*>(sender());
+	web1->history()->goToItem(web1->history()->itemAt(a->data().toInt()));
 }

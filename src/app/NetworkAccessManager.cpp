@@ -64,10 +64,15 @@ QNetworkReply* NetworkAccessManager::createRequest(Operation op, const QNetworkR
     		req.url().host().toLower().contains("wikipedia.org",Qt::CaseInsensitive) ||
 			req.url().host().toLower().contains("wikimedia.org",Qt::CaseInsensitive) ||
 			req.url().host().toLower().contains("wikidata.org",Qt::CaseInsensitive) ||
-			req.url().host().toLower() == "localhost"){
+			req.url().host().toLower().contains("wikibooks.org",Qt::CaseInsensitive) ||
+			req.url().host().toLower().contains("wikiquote.org",Qt::CaseInsensitive) ||
+			req.url().host().toLower().contains("wikiversity.org",Qt::CaseInsensitive) ||
+			req.url().host().toLower().contains("wikisource.org",Qt::CaseInsensitive) ||
+			req.url().host().toLower().contains("wikivoyage.org",Qt::CaseInsensitive) ||
+			req.url().host().toLower().contains("wikinews.org",Qt::CaseInsensitive) ||
+			req.url().host().toLower().contains("wiktionary.org",Qt::CaseInsensitive)){
         return QNetworkAccessManager::createRequest(op, req, outgoingData);
     }
     return new BlockedNetworkReply(this, req, op);
-
 }
 

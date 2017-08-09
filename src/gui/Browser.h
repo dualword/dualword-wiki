@@ -24,8 +24,11 @@ class WebPage : public QWebPage{
 	Q_OBJECT
 
 public:
-	WebPage(QObject *p = 0);
+	WebPage(QObject *p = 0, int flag = 0);
 	virtual ~WebPage();
+
+protected:
+    bool acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type);
 
 };
 
@@ -34,21 +37,22 @@ class Browser : public QWebView{
 
 public:
 
-	Browser(QWidget *p = 0);
+	Browser(QWidget *p = 0, int id = 0);
 	virtual ~Browser();
+	int getId(){return id;};
 
 public slots:
 	void finished(QNetworkReply * reply);
 	void findTxt();
 
+protected slots:
+    virtual void contextMenuEvent(QContextMenuEvent *event);
+    virtual	bool isValidUrl(const QUrl&);
+	void openLink();
+
 protected:
-    void contextMenuEvent(QContextMenuEvent *event);
-
-private slots:
-    void openLinkInNewTab();
-
-private:
 	QString searchString;
+	int id;
 
 };
 
