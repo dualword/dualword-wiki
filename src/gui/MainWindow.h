@@ -53,11 +53,17 @@ private slots:
 	void writeSettings();
 	void readSettings();
 	void showHistory();
+	void lang21click();
+	void lang22click();
+	void combo2change(const QString&);
+	void refresh();
 
 private:
 	QLineEdit* editUrl;
 	QComboBox *combo1, *combo2;
     Form* form;
+    QToolButton *lang21, *lang22;
+    QString lang;
 };
 
 #endif /* MAINWINDOW_H_ */

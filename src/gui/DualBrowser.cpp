@@ -44,7 +44,7 @@ void DualBrowser::slotLinkClicked(const QUrl& url){
 }
 
 bool DualBrowser::isValidUrl(const QUrl& url){
-	 QRegExp reg("(?:\\s*)([a-zA-Z]{2,2})\\.wikipedia\\.org/wiki/.*");
+	 QRegExp reg("(?:\\s*)([a-zA-Z]{2,6})\\.wikipedia\\.org/wiki/.+");
 	 int pos = reg.indexIn(url.toString());
 	 if (pos > -1) {
 		 return true;

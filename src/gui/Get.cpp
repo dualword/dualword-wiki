@@ -64,7 +64,7 @@ void GetTitle::finished(QNetworkReply * reply){
 			query.setQuery("doc($inputDocument)/api/query/pages/page/langlinks/ll/string()");
 			query.evaluateTo(&t);
 			if(t.trimmed().length() >= 1){
-				web->load(QUrl::fromUserInput(api.arg(lang2).arg(t)));
+				web->load(QUrl::fromUserInput(api.arg(lang2).arg(t.replace(" ", "_"))));
 				break;
 			}
 			query.setQuery("doc($inputDocument)/api/query/pages/page/@_idx/string()");
@@ -125,7 +125,7 @@ void GetPage::finished(QNetworkReply * reply){
 			query.setQuery("doc($inputDocument)/api/query/pages/page/@title/string()");
 			query.evaluateTo(&t);
 			if(t.trimmed().length() >= 1){
-				web->load(QUrl::fromUserInput(api.arg(lang2).arg(t)));
+				web->load(QUrl::fromUserInput(api.arg(lang2).arg(t.replace(" ", "_"))));
 				break;
 			}
 			web->setHtml((DualwordWikiApp::getHtml(":/article_not_found.html")).arg(name).arg(lang2+".wikipedia.org"));

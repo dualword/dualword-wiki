@@ -50,6 +50,11 @@ public slots:
 	void changeLang2 (const QString&);
 	QWebHistory* getHistory();
 	void loadHistory();
+	void changeLayout();
+	void like();
+	void dislike();
+	void clear();
+	int linkCount();
 
 private slots:
 	void linkClicked1 (const QUrl&);
@@ -57,10 +62,15 @@ private slots:
 	QString getValidUrl(const QString&);
 	QString getLinkLang(const QString&);
 	bool scroll(const QUrl&, Browser*);
+	void list1Clicked(QListWidgetItem*);
+	void fillSet(QSet<QString>&);
 
 private:
 	DualBrowser *web1, *web2;
 	QString nextUrl;
+	QSplitter *sp, *sp1;
+	QListWidget *list1;
+	QSet<QString> setLike, setDislike;
 };
 
 #endif /* SRC_GUI_DUALBROWSERFORM_H_ */

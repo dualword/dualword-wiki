@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>577</width>
-    <height>390</height>
+    <width>631</width>
+    <height>396</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,6 +15,12 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>2</number>
+    </property>
+    <property name="margin">
+     <number>1</number>
+    </property>
     <item>
      <widget class="Tab" name="tab" native="true"/>
     </item>
@@ -25,7 +31,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>577</width>
+     <width>631</width>
      <height>29</height>
     </rect>
    </property>
@@ -76,6 +82,10 @@
    <addaction name="actionReload"/>
    <addaction name="actionStop"/>
    <addaction name="actionHome"/>
+   <addaction name="actionLayout"/>
+   <addaction name="actionLike"/>
+   <addaction name="actionDislike"/>
+   <addaction name="actionClear"/>
    <addaction name="actionNext"/>
   </widget>
   <action name="actionBack">
@@ -122,6 +132,41 @@
    </property>
    <property name="toolTip">
     <string>Next page</string>
+   </property>
+  </action>
+  <action name="actionLayout">
+   <property name="text">
+    <string>ChangeLayout</string>
+   </property>
+   <property name="iconText">
+    <string>ChangeLayout</string>
+   </property>
+   <property name="toolTip">
+    <string>Change layout</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+   <property name="toolTip">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionLike">
+   <property name="text">
+    <string>Like</string>
+   </property>
+   <property name="toolTip">
+    <string>More on this topic</string>
+   </property>
+  </action>
+  <action name="actionDislike">
+   <property name="text">
+    <string>Dislike</string>
+   </property>
+   <property name="toolTip">
+    <string>Don't show similar pages</string>
    </property>
   </action>
  </widget>

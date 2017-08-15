@@ -21,7 +21,7 @@
 
 MainWindow::MainWindow(QWidget *p, Qt::WindowFlags f) : QMainWindow(p, f),
 	editUrl(new QLineEdit(this)), combo1(new QComboBox(this)), combo2(new QComboBox(this)),
-	form(0) {
+	form(0), lang21(0), lang22(0), lang("") {
 	setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose, true);
 	actionBack->setIcon(style()->standardIcon(QStyle::SP_ArrowBack, 0, this));
@@ -29,10 +29,20 @@ MainWindow::MainWindow(QWidget *p, Qt::WindowFlags f) : QMainWindow(p, f),
     actionReload->setIcon(style()->standardIcon(QStyle::SP_BrowserReload, 0, this));
     actionStop->setIcon(style()->standardIcon(QStyle::SP_BrowserStop, 0, this));
     actionHome->setIcon(style()->standardIcon(QStyle::SP_DirHomeIcon, 0, this));
+    actionLike->setIcon(style()->standardIcon(QStyle::SP_ArrowUp, 0, this));
+    actionDislike->setIcon(style()->standardIcon(QStyle::SP_ArrowDown, 0, this));
+    actionClear->setIcon(style()->standardIcon(QStyle::SP_TrashIcon, 0, this));
+    actionLayout->setIcon(style()->standardIcon(QStyle::SP_ComputerIcon, 0, this));
     actionNext->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward, 0, this));
-    toolBar->insertWidget(actionNext,editUrl);
-    toolBar->insertWidget(actionNext,combo1);
-    toolBar->insertWidget(actionNext,combo2);
+    toolBar->insertWidget(actionLayout,editUrl);
+    toolBar->insertSeparator(actionLike);
+    toolBar->insertWidget(actionLike,combo1);
+    toolBar->insertWidget(actionLike,combo2);
+    lang21 = new QToolButton(this);
+    toolBar->insertWidget(actionLike,lang21);
+    lang22 = new QToolButton(this);
+    toolBar->insertWidget(actionLike,lang22);
+    toolBar->insertSeparator(actionLike);
     setSlots();
     fillCombo();
 
@@ -44,6 +54,7 @@ MainWindow::~MainWindow() {
 
 void MainWindow::init(){
 	readSettings();
+	lang = combo2->currentText();
     tab->createBrowser();
 }
 
@@ -77,15 +88,18 @@ void MainWindow::currentForm(Form* f) {
 	    QObject::disconnect(actionReload,SIGNAL(triggered()), form, SLOT(reload()));
 	    QObject::disconnect(actionStop,SIGNAL(triggered()), form, SLOT(stop()));
 	    QObject::disconnect(actionHome,SIGNAL(triggered()), form, SLOT(home()));
-	    QObject::disconnect(actionNext,SIGNAL(triggered()), form,SLOT(next()));
-	    QObject::disconnect(form,SIGNAL(urlChanged(const QUrl&)),
-	    		this, SLOT(urlChanged(const QUrl&)));
-	    QObject::disconnect(form,SIGNAL(titleChanged(const QString&)),
-	    		this, SLOT(titleChanged(const QString&)));
+	    QObject::disconnect(actionNext,SIGNAL(triggered()), form, SLOT(next()));
+	    QObject::disconnect(actionLayout,SIGNAL(triggered()), form, SLOT(changeLayout()));
+	    QObject::disconnect(actionLike,SIGNAL(triggered()), form, SLOT(like()));
+	    QObject::disconnect(actionDislike,SIGNAL(triggered()), form, SLOT(dislike()));
+	    QObject::disconnect(actionClear,SIGNAL(triggered()), form, SLOT(clear()));
+	    QObject::disconnect(form,SIGNAL(urlChanged(const QUrl&)), this, SLOT(urlChanged(const QUrl&)));
+	    QObject::disconnect(form,SIGNAL(titleChanged(const QString&)), this, SLOT(titleChanged(const QString&)));
 	    QObject::disconnect(form,SIGNAL(statusBarMessage(const QString&)),
 	    		statusBar(), SLOT(showMessage(const QString&)));
 	    QObject::disconnect(form,SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-	    QObject::disconnect(form,SIGNAL(loadStarted()), this,SLOT(loadStarted()));
+	    QObject::disconnect(form,SIGNAL(loadStarted()), this, SLOT(loadStarted()));
+	    QObject::disconnect(form,SIGNAL(refresh()), this, SLOT(refresh()));
 		QObject::disconnect(combo1,SIGNAL(currentIndexChanged(const QString&)),
 				form, SLOT(changeLang1(const QString&)));
 		QObject::disconnect(combo2,SIGNAL(currentIndexChanged(const QString&)),
@@ -98,22 +112,27 @@ void MainWindow::currentForm(Form* f) {
     QObject::connect(actionStop,SIGNAL(triggered()), form, SLOT(stop()));
     QObject::connect(actionHome,SIGNAL(triggered()), form, SLOT(home()));
     QObject::connect(actionNext,SIGNAL(triggered()), form,SLOT(next()));
-    QObject::connect(form,SIGNAL(urlChanged(const QUrl&)),
-    		this, SLOT(urlChanged(const QUrl&)));
-    QObject::connect(form,SIGNAL(titleChanged(const QString&)),
-    		this, SLOT(titleChanged(const QString&)));
-    QObject::connect(form,SIGNAL(statusBarMessage(const QString&)),
-    		statusBar(), SLOT(showMessage(const QString&)));
-    QObject::connect(form,SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-    QObject::connect(form,SIGNAL(loadStarted()), this, SLOT(loadStarted()));
-	QObject::connect(combo1,SIGNAL(currentIndexChanged(const QString&)),
-			form, SLOT(changeLang1(const QString&)));
-	QObject::connect(combo2,SIGNAL(currentIndexChanged(const QString&)),
-			form, SLOT(changeLang2(const QString&)));
+    QObject::connect(actionLayout,SIGNAL(triggered()), form,SLOT(changeLayout()));
+    QObject::connect(actionLike,SIGNAL(triggered()), form, SLOT(like()));
+    QObject::connect(actionDislike,SIGNAL(triggered()), form, SLOT(dislike()));
+    QObject::connect(actionClear,SIGNAL(triggered()), form, SLOT(clear()));
+    QObject::connect(form,SIGNAL(urlChanged(const QUrl&)), SLOT(urlChanged(const QUrl&)));
+    QObject::connect(form,SIGNAL(titleChanged(const QString&)), SLOT(titleChanged(const QString&)));
+    QObject::connect(form,SIGNAL(statusBarMessage(const QString&)),	statusBar(), SLOT(showMessage(const QString&)));
+    QObject::connect(form,SIGNAL(loadFinished(bool)), SLOT(loadFinished(bool)));
+    QObject::connect(form,SIGNAL(loadStarted()), SLOT(loadStarted()));
+    QObject::connect(form,SIGNAL(refresh()), SLOT(refresh()));
+	QObject::connect(combo1,SIGNAL(currentIndexChanged(const QString&)), form, SLOT(changeLang1(const QString&)));
+	QObject::connect(combo2,SIGNAL(currentIndexChanged(const QString&)), form, SLOT(changeLang2(const QString&)));
 
 	titleChanged(form->getTitle());
 	urlChanged(form->getUrl());
 	actionNext->setEnabled(form->isNext());
+	actionLayout->setEnabled(form->isNext());
+	actionLike->setEnabled(form->isNext());
+	actionDislike->setEnabled(form->isNext());
+	actionClear->setEnabled(form->isNext());
+	refresh();
 }
 
 void MainWindow::titleChanged(const QString& title) {
@@ -161,6 +180,8 @@ void MainWindow::fillCombo(){
 	 combo2->addItems(list);
      combo1->setCurrentIndex(combo1->findText("en"));
      combo2->setCurrentIndex(combo2->findText("en"));
+     lang21->setText("en");
+     lang22->setText("en");
 }
 
 void MainWindow::writeSettings(){
@@ -168,6 +189,8 @@ void MainWindow::writeSettings(){
      settings.beginGroup("MainWindow");
      settings.setValue("lang1", combo1->currentText());
      settings.setValue("lang2", combo2->currentText());
+     settings.setValue("lang21", lang21->text());
+     settings.setValue("lang22", lang22->text());
      settings.endGroup();
  }
 
@@ -177,6 +200,12 @@ void MainWindow::writeSettings(){
 	 if(settings.contains("lang1") & settings.contains("lang2")){
 	     combo1->setCurrentIndex(combo1->findText(settings.value("lang1").toString()));
 	     combo2->setCurrentIndex(combo2->findText(settings.value("lang2").toString()));
+	     if(combo1->findText(settings.value("lang21").toString()) != -1){
+	    	 lang21->setText(settings.value("lang21").toString());
+	     }
+	     if(combo1->findText(settings.value("lang22").toString()) != -1){
+	    	 lang22->setText(settings.value("lang22").toString());
+	     }
 	 }
      settings.endGroup();
  }
@@ -184,11 +213,19 @@ void MainWindow::writeSettings(){
 void MainWindow::loadFinished(bool ok){
 	actionStop->setEnabled(false);
 	actionReload->setEnabled(true);
+	if(form->isNext()){
+		actionLike->setEnabled(true);
+		actionDislike->setEnabled(true);
+	}
 }
 
 void MainWindow::loadStarted(){
 	actionStop->setEnabled(true);
 	actionReload->setEnabled(false);
+	if(form->isNext()){
+		actionLike->setEnabled(false);
+		actionDislike->setEnabled(false);
+	}
 }
 
 void MainWindow::showHistory(){
@@ -202,5 +239,35 @@ void MainWindow::showHistory(){
 		a->setData(i);
 		QObject::connect(a, SIGNAL(triggered()), form, SLOT(loadHistory()));
 		menuHistory->addAction(a);
+	}
+}
+
+void MainWindow::lang21click(){
+	if(combo2->currentText() == lang21->text()) return;
+	QString tmp(combo2->currentText());
+	combo2->setCurrentIndex(combo2->findText(lang21->text()));
+	lang21->setText(tmp);
+}
+
+void MainWindow::lang22click(){
+	if(combo2->currentText() == lang22->text()) return;
+	QString tmp(combo2->currentText());
+	combo2->setCurrentIndex(combo2->findText(lang22->text()));
+	lang22->setText(tmp);
+}
+
+void MainWindow::combo2change(const QString& txt){
+	if(combo2->currentText() == lang) return;
+	if(txt == lang21->text() || txt == lang22->text()) return;
+	lang22->setText(lang21->text());
+	lang21->setText(lang);
+	lang = txt;
+}
+
+void MainWindow::refresh(){
+	if(form->linkCount()>0){
+		actionNext->setToolTip("Next Page (Links:"+QString::number(form->linkCount())+")");
+	}else{
+		actionNext->setToolTip("Next Page");
 	}
 }

@@ -30,6 +30,7 @@
 
 WebPage::WebPage(QObject *p, int flag) : QWebPage(p){
 	setNetworkAccessManager(new NetworkAccessManager(this));
+	history()->setMaximumItemCount(25);
 	if(flag != 0){
 		QWebSettings* qws = settings();
 		qws->setAttribute(QWebSettings::JavascriptEnabled, false);
@@ -69,6 +70,8 @@ void Browser::finished(QNetworkReply* reply){
 				setHtml((DualwordWikiApp::getHtml(":/error.html")).arg(reply->errorString()).arg(reply->url().toString()));
 			}
 	}
+	reply->close();
+	reply->deleteLater();
 }
 
 void Browser::findTxt(){
@@ -101,7 +104,7 @@ void Browser::openLink(){
 	QAction *a = qobject_cast<QAction*>(sender());
 	QString url = a->data().toUrl().toString();
 	Form *f = qobject_cast<Form*>(parentWidget());
-	if(!f) f = qobject_cast<Form*>(parentWidget()->parentWidget());
+	if(!f) f = qobject_cast<Form*>(parentWidget()->parentWidget()->parentWidget());
     Tab *tab = DualwordWikiApp::instance()->window()->getTab();
 	if(qobject_cast<DualBrowserForm*>(f)){
 		Form* f = new DualBrowserForm(tab);

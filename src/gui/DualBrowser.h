@@ -39,7 +39,6 @@ signals:
 
 protected slots:
 	bool isValidUrl(const QUrl&);
-	virtual void slotLinkClicked2(const QUrl&) {};
 
 protected:
 	QString lang;

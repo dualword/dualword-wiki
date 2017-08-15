@@ -20,9 +20,6 @@
 #include <QtGui>
 #include <QWebHistory>
 
-#include "app/DualwordWikiApp.h"
-#include "MainWindow.h"
-
 class Form : public QWidget {
      Q_OBJECT
 
@@ -47,6 +44,11 @@ public slots:
 	virtual void changeLang2 (const QString&) {};
 	virtual QWebHistory* getHistory(){return 0;};
 	virtual void loadHistory(){};
+	virtual void changeLayout(){};
+	virtual void like(){};
+	virtual void dislike(){};
+	virtual void clear(){};
+	virtual int linkCount(){return 0;};
 
 signals:
 	void titleChanged (const QString&);
@@ -54,6 +56,7 @@ signals:
 	void statusBarMessage (const QString&);
 	void loadFinished(bool);
 	void loadStarted();
+	void refresh();
 
 };
 
