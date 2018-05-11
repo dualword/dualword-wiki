@@ -1,7 +1,6 @@
 # Dualword-wiki
 
-Dualword-wiki - [Wikipedia](http://www.wikipedia.org) browser (
-[C++](http://www.isocpp.org), [Qt](http://www.qt.io), [WebKit](http://www.webkit.org) ).
+Dualword-wiki - [Wikipedia](http://www.wikipedia.org) browser written in [C++](http://www.isocpp.org).
 
 Features:
  - browser with access to the following websites:
