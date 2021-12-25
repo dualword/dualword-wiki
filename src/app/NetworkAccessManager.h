@@ -21,6 +21,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QNetworkCookieJar>
+#include <QNetworkCookie>
 
 class BlockedNetworkReply : public QNetworkReply{
 	Q_OBJECT

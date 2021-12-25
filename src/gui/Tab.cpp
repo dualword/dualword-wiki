@@ -73,8 +73,8 @@ int Tab::createDualBrowser(Form* form){
 }
 
 void Tab::closeTab(int i){
-	if(this->count() == 1)
-		createBrowser();
+	if(this->count() == 1) createBrowser();
+	widget(i)->deleteLater();
 	removeTab(i);
 }
 

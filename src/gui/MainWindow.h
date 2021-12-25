@@ -17,7 +17,7 @@
 #ifndef MAINWINDOW_H_
 #define MAINWINDOW_H_
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QUrl>
 #include <QMainWindow>
 
@@ -53,8 +53,6 @@ private slots:
 	void writeSettings();
 	void readSettings();
 	void showHistory();
-	void lang21click();
-	void lang22click();
 	void combo2change(const QString&);
 	void refresh();
 

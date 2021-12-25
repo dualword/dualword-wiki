@@ -21,7 +21,7 @@
 
 MainWindow::MainWindow(QWidget *p, Qt::WindowFlags f) : QMainWindow(p, f),
 	editUrl(new QLineEdit(this)), combo1(new QComboBox(this)), combo2(new QComboBox(this)),
-	form(0), lang21(0), lang22(0), lang("") {
+	form(0), lang("") {
 	setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose, true);
 	actionBack->setIcon(style()->standardIcon(QStyle::SP_ArrowBack, 0, this));
@@ -38,10 +38,6 @@ MainWindow::MainWindow(QWidget *p, Qt::WindowFlags f) : QMainWindow(p, f),
     toolBar->insertSeparator(actionLike);
     toolBar->insertWidget(actionLike,combo1);
     toolBar->insertWidget(actionLike,combo2);
-    lang21 = new QToolButton(this);
-    toolBar->insertWidget(actionLike,lang21);
-    lang22 = new QToolButton(this);
-    toolBar->insertWidget(actionLike,lang22);
     toolBar->insertSeparator(actionLike);
     setSlots();
     fillCombo();
@@ -180,8 +176,7 @@ void MainWindow::fillCombo(){
 	 combo2->addItems(list);
      combo1->setCurrentIndex(combo1->findText("en"));
      combo2->setCurrentIndex(combo2->findText("en"));
-     lang21->setText("en");
-     lang22->setText("en");
+
 }
 
 void MainWindow::writeSettings(){
@@ -189,8 +184,6 @@ void MainWindow::writeSettings(){
      settings.beginGroup("MainWindow");
      settings.setValue("lang1", combo1->currentText());
      settings.setValue("lang2", combo2->currentText());
-     settings.setValue("lang21", lang21->text());
-     settings.setValue("lang22", lang22->text());
      settings.endGroup();
  }
 
@@ -200,12 +193,6 @@ void MainWindow::writeSettings(){
 	 if(settings.contains("lang1") & settings.contains("lang2")){
 	     combo1->setCurrentIndex(combo1->findText(settings.value("lang1").toString()));
 	     combo2->setCurrentIndex(combo2->findText(settings.value("lang2").toString()));
-	     if(combo1->findText(settings.value("lang21").toString()) != -1){
-	    	 lang21->setText(settings.value("lang21").toString());
-	     }
-	     if(combo1->findText(settings.value("lang22").toString()) != -1){
-	    	 lang22->setText(settings.value("lang22").toString());
-	     }
 	 }
      settings.endGroup();
  }
@@ -235,32 +222,15 @@ void MainWindow::showHistory(){
 	h = form->getHistory();
 	if(!h) return;
 	for(int i=h->items().size()-1; i>=0; i--){
-		QAction *a = new QAction(h->itemAt(i).icon(), h->itemAt(i).title(), menuHistory);
+		QAction *a = new QAction(h->itemAt(i).title(), menuHistory);
 		a->setData(i);
 		QObject::connect(a, SIGNAL(triggered()), form, SLOT(loadHistory()));
 		menuHistory->addAction(a);
 	}
 }
 
-void MainWindow::lang21click(){
-	if(combo2->currentText() == lang21->text()) return;
-	QString tmp(combo2->currentText());
-	combo2->setCurrentIndex(combo2->findText(lang21->text()));
-	lang21->setText(tmp);
-}
-
-void MainWindow::lang22click(){
-	if(combo2->currentText() == lang22->text()) return;
-	QString tmp(combo2->currentText());
-	combo2->setCurrentIndex(combo2->findText(lang22->text()));
-	lang22->setText(tmp);
-}
-
 void MainWindow::combo2change(const QString& txt){
 	if(combo2->currentText() == lang) return;
-	if(txt == lang21->text() || txt == lang22->text()) return;
-	lang22->setText(lang21->text());
-	lang21->setText(lang);
 	lang = txt;
 }
 

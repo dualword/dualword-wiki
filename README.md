@@ -1,6 +1,5 @@
-# Dualword-wiki
 
-Dualword-wiki - [Wikipedia](http://www.wikipedia.org) browser written in [C++](http://www.isocpp.org).
+Dualword-wiki - [Wikipedia](http://www.wikipedia.org) browser.
 
 Features:
  - browser with access to the following websites:
@@ -12,10 +11,9 @@ Features:
 			
 License: GNU GENERAL PUBLIC LICENSE Version 3  
 Source code: http://github.com/dualword/dualword-wiki/  
-Files: http://sourceforge.net/projects/dualword-wiki/  
 
 Third Party Software:
- - Qt 4.8.6 license:LGPL v2.1
+ - Qt License: LGPL v3
 
 ![Screenshot](etc/screenshot/Dualword-wiki.png)
 

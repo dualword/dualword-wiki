@@ -1,8 +1,10 @@
+#
 /src/.build/
 /src/dualword-wiki
 /Makefile
 /src/Makefile
 /tr/*.qm
+.qmake.stash
 
 #eclipse
 /.cproject

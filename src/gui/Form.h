@@ -17,7 +17,7 @@
 #ifndef FORM_H_
 #define FORM_H_
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QWebHistory>
 
 class Form : public QWidget {

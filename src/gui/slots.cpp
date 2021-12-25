@@ -22,8 +22,6 @@ void MainWindow::setSlots() {
     QObject::connect(tab,SIGNAL(currentForm(Form*)), SLOT(currentForm(Form*)));
 	QObject::connect(editUrl,SIGNAL(returnPressed()), SLOT(load()));
 	QObject::connect(menuHistory,SIGNAL(aboutToShow()), SLOT(showHistory()));
-	QObject::connect(lang21,SIGNAL(clicked()), SLOT(lang21click()));
-	QObject::connect(lang22,SIGNAL(clicked()), SLOT(lang22click()));
 	QObject::connect(combo2,SIGNAL(currentIndexChanged(const QString&)),
 			SLOT(combo2change(const QString&)));
 }

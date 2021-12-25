@@ -18,7 +18,8 @@
 #define BROWSER_H_
 
 #include <QtCore>
-#include <QtWebKit>
+#include <QtWebKitWidgets/QtWebKitWidgets>
+#include <QWebPage>
 
 class WebPage : public QWebPage{
 	Q_OBJECT
