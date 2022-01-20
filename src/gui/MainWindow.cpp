@@ -73,7 +73,7 @@ void MainWindow::showAbout() {
 	str.append(qApp->applicationName());
 	str.append(" ").append(qApp->applicationVersion()).append("<br>");
 	str.append("License: GPL v3 <br/>");
-	str.append("&copy;2017 Alexander Busorgin <br/>");
+	str.append("&copy;2017-2022 Alexander Busorgin <br/>");
 	QMessageBox::about(this, tr("About"), str );
 }
 
@@ -217,7 +217,7 @@ void MainWindow::loadStarted(){
 
 void MainWindow::showHistory(){
 	menuHistory->clear();
-	QWebHistory* h;
+	QWebEngineHistory* h;
 	if(!form) return;
 	h = form->getHistory();
 	if(!h) return;

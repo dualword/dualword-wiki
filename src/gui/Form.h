@@ -18,7 +18,7 @@
 #define FORM_H_
 
 #include <QtWidgets>
-#include <QWebHistory>
+#include <QWebEngineHistory>
 
 class Form : public QWidget {
      Q_OBJECT
@@ -42,7 +42,7 @@ public slots:
 	virtual bool isNext () {return false;};
 	virtual void changeLang1 (const QString&) {};
 	virtual void changeLang2 (const QString&) {};
-	virtual QWebHistory* getHistory(){return 0;};
+	virtual QWebEngineHistory* getHistory(){return 0;};
 	virtual void loadHistory(){};
 	virtual void changeLayout(){};
 	virtual void like(){};

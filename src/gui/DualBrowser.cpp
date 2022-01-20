@@ -18,8 +18,8 @@
 #include "Get.h"
 
 DualBrowser::DualBrowser(QWidget *p, int id) : Browser(p, id), lang("") {
-	page()->currentFrame()->setScrollBarPolicy(Qt::Vertical,Qt::ScrollBarAlwaysOn);
-	page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+//	page()->currentFrame()->setScrollBarPolicy(Qt::Vertical,Qt::ScrollBarAlwaysOn);
+//	page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 	QObject::connect(page(),SIGNAL(linkClicked(QUrl)), SLOT(slotLinkClicked(QUrl)));
 
 }

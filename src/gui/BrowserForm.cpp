@@ -25,10 +25,10 @@ BrowserForm::BrowserForm(QWidget *p) : Form(p), browser(new Browser(this)) {
     		SIGNAL(titleChanged(const QString&)));
     QObject::connect(browser,SIGNAL(urlChanged(const QUrl&)),
     		SIGNAL(urlChanged(const QUrl&)));
-    QObject::connect(browser->page(), SIGNAL(linkHovered(const QString&, const QString&, const QString&)),
+    QObject::connect(browser->page(), SIGNAL(linkHovered(const QString&)),
     		SIGNAL(statusBarMessage(const QString&)));
-    QObject::connect(browser->page(),SIGNAL(statusBarMessage(const QString&)),
-    		SIGNAL(statusBarMessage(const QString&)));
+//    QObject::connect(browser->page(),SIGNAL(statusBarMessage(const QString&)),
+//    		SIGNAL(statusBarMessage(const QString&)));
     QObject::connect(browser,SIGNAL(loadFinished(bool)), SIGNAL(loadFinished(bool)));
     QObject::connect(browser,SIGNAL(loadStarted()), SIGNAL(loadStarted()));
 
@@ -39,11 +39,11 @@ BrowserForm::~BrowserForm() {
 }
 
 QString BrowserForm::getTitle() const{
-	return browser->page()->currentFrame()->title();
+	return browser->page()->title();
 }
 
 QString BrowserForm::getUrl() const{
-	return browser->page()->currentFrame()->url().toString();
+	return browser->page()->url().toString();
 }
 
 void BrowserForm::load(const QString& url){
@@ -75,7 +75,7 @@ void BrowserForm::next (){
 
 }
 
-QWebHistory* BrowserForm::getHistory(){
+QWebEngineHistory* BrowserForm::getHistory(){
 	return browser->page()->history();
 }
 

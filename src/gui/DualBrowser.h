@@ -36,6 +36,7 @@ public:
 
 signals:
 	void linkClicked(QUrl);
+	void statusBarMessage (const QString&);
 
 protected slots:
 	bool isValidUrl(const QUrl&);

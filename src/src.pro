@@ -2,14 +2,13 @@ include("dualword-wiki.version.pri")
 
 TARGET = dualword-wiki
 TEMPLATE = app
-QT += xml xmlpatterns
- 
+message(Building: = $${TARGET} - $${VERSION})
+
 DEPENDPATH += .
 INCLUDEPATH += .
 
-CONFIG += qt webkit network release
-
-message(Building: = $${TARGET} - $${VERSION})
+QT += webenginewidgets xml xmlpatterns
+CONFIG += c++11 thread release 
 
 HEADERS += \
 	app/DualwordWikiApp.h \

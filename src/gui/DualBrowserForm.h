@@ -48,7 +48,7 @@ public slots:
 	bool isNext () {return true;};
 	void changeLang1 (const QString&);
 	void changeLang2 (const QString&);
-	QWebHistory* getHistory();
+	QWebEngineHistory* getHistory();
 	void loadHistory();
 	void changeLayout();
 	void like();
@@ -63,14 +63,14 @@ private slots:
 	QString getLinkLang(const QString&);
 	bool scroll(const QUrl&, Browser*);
 	void list1Clicked(QListWidgetItem*);
-	void fillSet(QSet<QString>&);
+	void update(const QSet<QString>&);
 
 private:
 	DualBrowser *web1, *web2;
 	QString nextUrl;
 	QSplitter *sp, *sp1;
 	QListWidget *list1;
-	QSet<QString> setLike, setDislike;
+	QSet<QString> setLinks, setLike, setDislike;
 };
 
 #endif /* SRC_GUI_DUALBROWSERFORM_H_ */

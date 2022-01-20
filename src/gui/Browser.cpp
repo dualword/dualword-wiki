@@ -28,50 +28,52 @@
 #include <QMenu>
 #include <QClipboard>
 
-WebPage::WebPage(QObject *p, int flag) : QWebPage(p){
-	setNetworkAccessManager(new NetworkAccessManager(this));
-	history()->setMaximumItemCount(25);
-	if(flag != 0){
-		QWebSettings* qws = settings();
-		qws->setAttribute(QWebSettings::JavascriptEnabled, false);
-	}
+WebPage::WebPage(QObject *p, int flag) : QWebEnginePage(p){
+//	history()->setMaximumItemCount(25);
+//	if(flag != 0){
+//		QWebSettings* qws = settings();
+//		qws->setAttribute(QWebSettings::JavascriptEnabled, false);
+//	}
 }
 
-bool WebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type){
-    return QWebPage::acceptNavigationRequest(frame, request, type);
+bool WebPage::acceptNavigationRequest(const QUrl& url, QWebEnginePage::NavigationType type, bool mframe){
+	emit linkClicked(url);
+    return QWebEnginePage::acceptNavigationRequest(url, type, mframe);
 }
 
 WebPage::~WebPage() {
-
+	history()->clear();
+    profile()->cookieStore()->deleteAllCookies();
+    profile()->clearHttpCache();
+    profile()->clearAllVisitedLinks();
 }
 
-Browser::Browser(QWidget *p, int id) : QWebView(p), searchString(""), id(id){
+Browser::Browser(QWidget *p, int id) : QWebEngineView(p), searchString(""), id(id){
 	setPage(new WebPage(this, id));
 	new QShortcut(QKeySequence::Find, this, SLOT(findTxt()), nullptr, Qt::WidgetWithChildrenShortcut);
-	connect(page()->networkAccessManager(), SIGNAL(finished(QNetworkReply *)),
-	    SLOT(finished(QNetworkReply *)));
+    QObject::connect(page(), SIGNAL(loadFinished(bool)), SLOT(loadFinished(bool)));
 }
 
 Browser::~Browser() {
 
 }
 
-void Browser::finished(QNetworkReply* reply){
-	switch (reply->error()) {
-		case QNetworkReply::NoError:
-		case QNetworkReply::OperationCanceledError:
-		  break;
-		default:
-			QString status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
-			QString msg = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-			if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() > 0){
-				setHtml((DualwordWikiApp::getHtml(":/error.html")).arg(reply->errorString()+" ("+status+" "+msg+")").arg(reply->url().toString()));
-			}else{
-				setHtml((DualwordWikiApp::getHtml(":/error.html")).arg(reply->errorString()).arg(reply->url().toString()));
-			}
-	}
-	reply->close();
-	reply->deleteLater();
+void Browser::loadFinished(bool ok){
+//	switch (reply->error()) {
+//		case QNetworkReply::NoError:
+//		case QNetworkReply::OperationCanceledError:
+//		  break;
+//		default:
+//			QString status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
+//			QString msg = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+//			if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() > 0){
+//				setHtml((DualwordWikiApp::getHtml(":/error.html")).arg(reply->errorString()+" ("+status+" "+msg+")").arg(reply->url().toString()));
+//			}else{
+//				setHtml((DualwordWikiApp::getHtml(":/error.html")).arg(reply->errorString()).arg(reply->url().toString()));
+//			}
+//	}
+//	reply->close();
+//	reply->deleteLater();
 }
 
 void Browser::findTxt(){
@@ -85,19 +87,19 @@ void Browser::findTxt(){
 }
 
 void Browser::contextMenuEvent(QContextMenuEvent *event){
-    QWebHitTestResult r = page()->mainFrame()->hitTestContent(event->pos());
-    if (!r.linkUrl().isEmpty()) {
-        QMenu menu(this);
-        if(isValidUrl(r.linkUrl())){
-    		QAction *a = menu.addAction(tr("Open Link in New Tab"), this, SLOT(openLink()));
-    		a->setData(r.linkUrl());
-    		menu.addSeparator();
-        }
-        menu.addAction(pageAction(QWebPage::CopyLinkToClipboard));
-        menu.exec(mapToGlobal(event->pos()));
-        return;
-    }
-    QWebView::contextMenuEvent(event);
+    auto r = page()->contextMenuData().linkUrl();
+	if (!r.isEmpty()) {
+		QMenu menu(this);
+		if(isValidUrl(r)){
+			QAction *a = menu.addAction(tr("Open Link in New Tab"), this, SLOT(openLink()));
+			a->setData(r);
+			menu.addSeparator();
+		}
+		menu.addAction(pageAction(QWebEnginePage::CopyLinkToClipboard));
+		menu.exec(mapToGlobal(event->pos()));
+		return;
+	}
+	QWebEngineView::contextMenuEvent(event);
 }
 
 void Browser::openLink(){
@@ -133,7 +135,3 @@ bool Browser::isValidUrl(const QUrl& url){
 
 	return false;
 }
-
-
-
-

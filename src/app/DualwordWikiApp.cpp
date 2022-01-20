@@ -16,6 +16,7 @@
 
 #include "DualwordWikiApp.h"
 #include "gui/MainWindow.h"
+#include "gui/Browser.h"
 
 DualwordWikiApp::DualwordWikiApp(int &argc, char **argv) : QApplication(argc, argv) {
 	setApplicationName("Dualword-wiki");
@@ -24,6 +25,7 @@ DualwordWikiApp::DualwordWikiApp(int &argc, char **argv) : QApplication(argc, ar
 	#endif
 	QApplication::setQuitOnLastWindowClosed(true);
 	qsrand(QTime::currentTime().msec());
+    QWebEngineProfile::defaultProfile()->setRequestInterceptor(new Interceptor(this));
 }
 
 DualwordWikiApp::~DualwordWikiApp() {
@@ -35,11 +37,9 @@ DualwordWikiApp *DualwordWikiApp::instance() {
 }
 
 QString DualwordWikiApp::getHtml(const QString& f){
-	QFile file;
-	file.setFileName(f);
+	QFile file(f);
 	bool ok = file.open(QIODevice::ReadOnly);
-	QString html = QString(QLatin1String(file.readAll()));
-	return html;
+	return QString(QLatin1String(file.readAll()));
 }
 
 void DualwordWikiApp::start() {

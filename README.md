@@ -2,10 +2,9 @@
 Dualword-wiki - [Wikipedia](http://www.wikipedia.org) browser.
 
 Features:
- - browser with access to the following websites:
-	wikipedia.org, wikimedia.org, wikidata.org,
-	wikibooks.org, wikiquote.org,wikiversity.org,
-	wikisource.org, wikivoyage.org, wikinews.org, wiktionary.org
+ - site-specific web browser with access to the Wikipedia websites:
+	wikipedia.org, wiktionary.org, wikibooks.org, wikiversity.org, wikinews.org,
+	wikivoyage.org, wikisource.org, wikidata.org, wikiquote.org, wikimedia.org
  - dual browser (dual language) tabs with access to wikipedia.org website
  - buttons: "More on this topic", "Don't show similar pages", "Next page"
 			

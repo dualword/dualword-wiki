@@ -40,7 +40,7 @@ public slots:
 	void stop ();
 	void home();
 	void next ();
-	QWebHistory* getHistory();
+	QWebEngineHistory* getHistory();
 	void loadHistory();
 
 private:

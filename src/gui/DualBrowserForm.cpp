@@ -19,8 +19,6 @@
 #include "app/DualwordWikiApp.h"
 #include "MainWindow.h"
 
-#include <QWebFrame>
-
 DualBrowserForm::DualBrowserForm(QWidget *p) : Form(p),
 	web1(new DualBrowser(this,1)), web2(new DualBrowser(this,2)), nextUrl(""), list1(0) {
 	web1->setLang(DualwordWikiApp::instance()->window()->lang1());
@@ -37,18 +35,18 @@ DualBrowserForm::DualBrowserForm(QWidget *p) : Form(p),
     		SIGNAL(titleChanged(const QString&)));
     QObject::connect(web1,SIGNAL(urlChanged(const QUrl&)),
     		SIGNAL(urlChanged(const QUrl&)));
-    QObject::connect(web1,SIGNAL(statusBarMessage(const QString&)),
+//    QObject::connect(web1,SIGNAL(statusBarMessage(const QString&)),
+//    		SIGNAL(statusBarMessage(const QString&)));
+//    QObject::connect(web2,SIGNAL(statusBarMessage(const QString&)),
+//    		SIGNAL(statusBarMessage(const QString&)));
+    QObject::connect(web1->page(), SIGNAL(linkHovered(const QString&)),
     		SIGNAL(statusBarMessage(const QString&)));
-    QObject::connect(web2,SIGNAL(statusBarMessage(const QString&)),
+//    QObject::connect(web1->page(),SIGNAL(statusBarMessage(const QString&)),
+//    		SIGNAL(statusBarMessage(const QString&)));
+    QObject::connect(web2->page(), SIGNAL(linkHovered(const QString&)),
     		SIGNAL(statusBarMessage(const QString&)));
-    QObject::connect(web1->page(), SIGNAL(linkHovered(const QString&, const QString&, const QString&)),
-    		SIGNAL(statusBarMessage(const QString&)));
-    QObject::connect(web1->page(),SIGNAL(statusBarMessage(const QString&)),
-    		SIGNAL(statusBarMessage(const QString&)));
-    QObject::connect(web2->page(), SIGNAL(linkHovered(const QString&, const QString&, const QString&)),
-    		SIGNAL(statusBarMessage(const QString&)));
-    QObject::connect(web2->page(),SIGNAL(statusBarMessage(const QString&)),
-    		SIGNAL(statusBarMessage(const QString&)));
+//    QObject::connect(web2->page(),SIGNAL(statusBarMessage(const QString&)),
+//    		SIGNAL(statusBarMessage(const QString&)));
 	QObject::connect(web1,SIGNAL(linkClicked(QUrl)), SLOT(linkClicked1(QUrl)));
 	QObject::connect(web2,SIGNAL(linkClicked(QUrl)), SLOT(linkClicked2(QUrl)));
     QObject::connect(web1,SIGNAL(loadStarted()), SIGNAL(loadStarted()));
@@ -66,13 +64,17 @@ DualBrowserForm::~DualBrowserForm() {
 }
 
 QString DualBrowserForm::getTitle() const{
-	QString t = web1->page()->currentFrame()->title();
+	QString t = web1->page()->title();
 	return t.mid(t.lastIndexOf("/")+1);
 }
 
 QString DualBrowserForm::getUrl() const{
-	QString url = web1->page()->currentFrame()->url().toString();
-	return url.mid(url.lastIndexOf("/")+1);
+	QString url = web1->page()->url().toString();
+	if(web1->page()->url().host().length() <= 0){
+		return web1->page()->url().host();
+	}else{
+		return url.mid(url.lastIndexOf("/")+1);
+	}
 }
 
 void DualBrowserForm::back (){
@@ -174,6 +176,10 @@ void DualBrowserForm::next (){
 		nextUrl = setLike.toList().value(qrand() % setLike.size());
 		setLike.remove(nextUrl);
 		emit refresh();
+	}else if(setLinks.size()>0){
+		nextUrl = setLinks.toList().value(qrand() % setLinks.size());
+		setLinks.remove(nextUrl);
+		emit refresh();
 	}
 	if(nextUrl.length() == 0) return;
 	if(web1->getLang() == DualwordWikiApp::instance()->window()->lang1()){
@@ -185,20 +191,17 @@ void DualBrowserForm::next (){
 }
 
 void DualBrowserForm::slotLoadFinished(bool ok){
-	QSet<QString> set;
-	fillSet(set);
-	set.subtract(setDislike);
-	if(set.size()>0 && setLike.size()==0){
-		nextUrl = set.toList().value(qrand() % set.size());
-	}
-	if(list1){
-		list1->clear();
-		list1->setToolTip("");
-		foreach (const QString &val, set)
-			list1->addItem(val);
-		list1->sortItems();
-		list1->setToolTip(getTitle()+" Links:"+QString::number(set.size()));
-	}
+	web1->page()->runJavaScript("[].map.call(document.querySelectorAll('a[rel=\"mw:WikiLink\"]'),function(o){return o.attributes.href.value;})",
+		 [this](const QVariant& var)  {
+		QSet<QString> set;
+		for(QString& s: var.toStringList()){
+			if(!(s.startsWith("./"))) continue;
+			if(s.trimmed().length()<=0) continue;
+			if(s.contains(QRegExp("[\\[:#]"))) continue;
+			set << s.replace("./", "");
+		}
+		update(set);
+	 });
 }
 
 QString DualBrowserForm::getValidUrl(const QString& url){
@@ -221,7 +224,7 @@ QString DualBrowserForm::getLinkLang(const QString& link){
 
 bool DualBrowserForm::scroll(const QUrl& url, Browser* web){
 	if(url.hasFragment() & (getUrl() == getValidUrl(url.toString()))){
-		web->page()->mainFrame()->scrollToAnchor(url.fragment());
+		//web->page()->mainFrame()->scrollToAnchor(url.fragment());
 		if(web1 == web){
 
 		}else{
@@ -232,7 +235,7 @@ bool DualBrowserForm::scroll(const QUrl& url, Browser* web){
 	return false;
 }
 
-QWebHistory* DualBrowserForm::getHistory(){
+QWebEngineHistory* DualBrowserForm::getHistory(){
 	return web1->page()->history();
 }
 
@@ -250,13 +253,11 @@ void DualBrowserForm::changeLayout(){
     }else{
     	sp->setOrientation(Qt::Vertical);
     	list1->setVisible(true);
-    	QSet<QString> set;
-    	fillSet(set);
     	list1->clear();
-    	foreach (const QString &val, set)
+    	foreach (const QString &val, setLinks)
     		list1->addItem(val);
     	list1->sortItems();
-    	list1->setToolTip(getTitle()+" Links:"+QString::number(set.size()));
+    	list1->setToolTip(getTitle()+" Links:"+QString::number(setLinks.size()));
     }
 }
 
@@ -265,13 +266,13 @@ void DualBrowserForm::list1Clicked(QListWidgetItem* i){
 }
 
 void DualBrowserForm::like(){
-	fillSet(setLike);
+	setLike.unite(setLinks);
 	setLike.subtract(setDislike);
 	emit refresh();
 }
 
 void DualBrowserForm::dislike(){
-	fillSet(setDislike);
+	setDislike.unite(setLinks);
 	setLike.subtract(setDislike);
 	emit refresh();
 }
@@ -286,17 +287,16 @@ int DualBrowserForm::linkCount(){
 	return setLike.size();
 }
 
-void DualBrowserForm::fillSet(QSet<QString>& set){
-	QWebFrame *frame = web1->page()->mainFrame();
-	if(!frame) return;
-	QWebElement doc = frame->documentElement();
-	if(doc.isNull()) return;
-	QWebElementCollection elements = doc.findAll("a[rel=\"mw:WikiLink\"]");
-	for(int i=0;elements.count();i++){
-		if(i>1000) break;
-		if(!(elements[i].attribute("href").startsWith("./"))) continue;
-		if(elements[i].attribute("href").trimmed().length()<=0) continue;
-		if(elements[i].attribute("href").contains(QRegExp("[\\[:#]"))) continue;
-		set << elements[i].attribute("href").replace("./", "");
+void DualBrowserForm::update(const QSet<QString>& set){
+	setLinks.clear();
+	setLinks.reserve(set.size());
+	setLinks.unite(set);
+	if(list1){
+		list1->clear();
+		list1->setToolTip("");
+		foreach (const QString &val, set)
+			list1->addItem(val);
+		list1->sortItems();
+		list1->setToolTip(getTitle()+" Links:"+QString::number(set.size()));
 	}
 }

@@ -17,23 +17,47 @@
 #ifndef BROWSER_H_
 #define BROWSER_H_
 
-#include <QtCore>
-#include <QtWebKitWidgets/QtWebKitWidgets>
-#include <QWebPage>
+#include <QtWebEngineWidgets/QtWebEngineWidgets>
 
-class WebPage : public QWebPage{
+class WebPage : public QWebEnginePage{
 	Q_OBJECT
 
 public:
 	WebPage(QObject *p = 0, int flag = 0);
 	virtual ~WebPage();
 
+signals:
+	void linkClicked(QUrl);
+
 protected:
-    bool acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type);
+    bool acceptNavigationRequest(const QUrl&, QWebEnginePage::NavigationType, bool);
 
 };
 
-class Browser : public QWebView{
+class Interceptor: public QWebEngineUrlRequestInterceptor{
+    Q_OBJECT
+
+public:
+    Interceptor(QObject* p = nullptr) : QWebEngineUrlRequestInterceptor(p) {
+		list << "wikipedia.org" << "wikimedia.org" << "wikidata.org";
+		list << "wikibooks.org" << "wikiquote.org" << "wikiversity.org";
+		list << "wikisource.org" << "wikivoyage.org" << "wikinews.org";
+		list << "wiktionary.org";
+    }
+
+    void interceptRequest(QWebEngineUrlRequestInfo &info){
+    	if(info.requestUrl().host().length() == 0) return;
+    	for(const QString& s : list){
+    		if(info.requestUrl().host().contains(s, Qt::CaseInsensitive)) return;
+    	}
+		info.block(true);
+    }
+
+private:
+    QList<QString> list;
+};
+
+class Browser : public QWebEngineView{
 	Q_OBJECT
 
 public:
@@ -43,7 +67,7 @@ public:
 	int getId(){return id;};
 
 public slots:
-	void finished(QNetworkReply * reply);
+	void loadFinished(bool);
 	void findTxt();
 
 protected slots:
