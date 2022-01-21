@@ -1,4 +1,4 @@
 How to build:
- - prerequisites: C++11 compiler, Qt 5.7. 
+ - prerequisites: C++11 compiler, Qt 5.11. 
  - qmake
  - make

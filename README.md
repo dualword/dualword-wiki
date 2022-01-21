@@ -6,7 +6,7 @@ Features:
 	wikipedia.org, wiktionary.org, wikibooks.org, wikiversity.org, wikinews.org,
 	wikivoyage.org, wikisource.org, wikidata.org, wikiquote.org, wikimedia.org
  - dual browser (dual language) tabs with access to wikipedia.org website
- - buttons: "More on this topic", "Don't show similar pages", "Next page"
+ - buttons: "Like", "Dislike", "Next page"
 			
 License: GNU GENERAL PUBLIC LICENSE Version 3  
 Source code: http://github.com/dualword/dualword-wiki/  

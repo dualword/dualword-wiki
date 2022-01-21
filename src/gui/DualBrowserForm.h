@@ -54,7 +54,8 @@ public slots:
 	void like();
 	void dislike();
 	void clear();
-	int linkCount();
+	int likeCount() {return setLike.size();};
+	int dislikeCount() {return setDislike.size();};
 
 private slots:
 	void linkClicked1 (const QUrl&);

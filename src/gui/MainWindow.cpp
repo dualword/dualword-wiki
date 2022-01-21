@@ -73,6 +73,7 @@ void MainWindow::showAbout() {
 	str.append(qApp->applicationName());
 	str.append(" ").append(qApp->applicationVersion()).append("<br>");
 	str.append("License: GPL v3 <br/>");
+	str.append("Website: <a href='http://github.com/dualword/dualword-wiki'>Dualword-wiki</a><br/>");
 	str.append("&copy;2017-2022 Alexander Busorgin <br/>");
 	QMessageBox::about(this, tr("About"), str );
 }
@@ -235,9 +236,6 @@ void MainWindow::combo2change(const QString& txt){
 }
 
 void MainWindow::refresh(){
-	if(form->linkCount()>0){
-		actionNext->setToolTip("Next Page (Links:"+QString::number(form->linkCount())+")");
-	}else{
-		actionNext->setToolTip("Next Page");
-	}
+	actionLike->setToolTip("Like (" + QString::number(form->likeCount()) + ")");
+	actionDislike->setToolTip("Dislike (" + QString::number(form->dislikeCount()) + ")");
 }

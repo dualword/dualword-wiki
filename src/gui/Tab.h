@@ -39,7 +39,6 @@ public slots:
 	int createBrowser(Form* f = 0);
 	int createDualBrowser(Form* f = 0);
 	void closeTab(int);
-	void currentChanged (int index);
 	void setToolTip(const QString&);
 
 private slots:

@@ -175,12 +175,11 @@ void DualBrowserForm::next (){
 	if(setLike.size()>0){
 		nextUrl = setLike.toList().value(qrand() % setLike.size());
 		setLike.remove(nextUrl);
-		emit refresh();
 	}else if(setLinks.size()>0){
 		nextUrl = setLinks.toList().value(qrand() % setLinks.size());
 		setLinks.remove(nextUrl);
-		emit refresh();
 	}
+	emit refresh();
 	if(nextUrl.length() == 0) return;
 	if(web1->getLang() == DualwordWikiApp::instance()->window()->lang1()){
 		web1->getPage(web1->getLang(),DualwordWikiApp::instance()->window()->lang1(),nextUrl);
@@ -281,10 +280,6 @@ void DualBrowserForm::clear(){
 	setLike.clear();
 	setDislike.clear();
 	emit refresh();
-}
-
-int DualBrowserForm::linkCount(){
-	return setLike.size();
 }
 
 void DualBrowserForm::update(const QSet<QString>& set){

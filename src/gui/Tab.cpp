@@ -25,12 +25,11 @@ Tab::Tab(QWidget *p) : QTabWidget(p) {
 	setContextMenuPolicy(Qt::CustomContextMenu);
     setTabsClosable(true);
     setMovable(true);
-    connect(this, SIGNAL(currentChanged (int)), SLOT(currentChanged(int)));
+    connect(this, &QTabWidget::currentChanged, [this](){emit currentForm(qobject_cast<Form*>(currentWidget()));});
     connect(this, SIGNAL(tabCloseRequested (int)), SLOT(closeTab(int)));
     connect(this, SIGNAL(NewBrowser()), SLOT(createBrowser()));
     connect(this, SIGNAL(NewDualBrowser()), SLOT(createDualBrowser()));
-    connect(this, SIGNAL(customContextMenuRequested(QPoint)),
-    		SLOT(contextMenuRequested(QPoint)));
+    connect(this, SIGNAL(customContextMenuRequested(QPoint)), SLOT(contextMenuRequested(QPoint)));
 }
 
 Tab::~Tab() {
@@ -78,16 +77,11 @@ void Tab::closeTab(int i){
 	removeTab(i);
 }
 
-void Tab::currentChanged (int index){
-	Form* f = qobject_cast<Form*>(currentWidget());
-	emit currentForm(f);
-}
-
 void Tab::setToolTip(const QString& s){
 	Form *f = qobject_cast<Form*>(sender());
 	int i = indexOf(f);
 	if (i != -1) {
-		setTabText(i, f->getTitle());
+		setTabText(i, f->getTitle().left(25));
 		setTabToolTip(i, f->getUrl());
 	}
 }

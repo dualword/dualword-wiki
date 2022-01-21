@@ -27,7 +27,7 @@ class DualwordWikiApp : public QApplication {
 public:
 	DualwordWikiApp(int &argc, char **argv);
 	virtual ~DualwordWikiApp();
-	MainWindow* window() {return win;};
+	MainWindow* window() {return win.get();};
     static DualwordWikiApp *instance();
     static QString getHtml(const QString&);
 
@@ -35,7 +35,7 @@ public Q_SLOTS:
 	void start();
 
 private:
-	MainWindow* win;
+	QScopedPointer<MainWindow> win;
 
 };
 

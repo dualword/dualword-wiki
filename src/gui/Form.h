@@ -48,7 +48,8 @@ public slots:
 	virtual void like(){};
 	virtual void dislike(){};
 	virtual void clear(){};
-	virtual int linkCount(){return 0;};
+	virtual int likeCount(){return 0;};
+	virtual int dislikeCount(){return 0;};
 
 signals:
 	void titleChanged (const QString&);

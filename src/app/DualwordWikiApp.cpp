@@ -43,7 +43,7 @@ QString DualwordWikiApp::getHtml(const QString& f){
 }
 
 void DualwordWikiApp::start() {
-	win = new MainWindow();
+	win.reset(new MainWindow());
 	win->init();
 	win->show();
 }
