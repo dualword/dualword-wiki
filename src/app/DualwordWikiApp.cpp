@@ -25,7 +25,7 @@ DualwordWikiApp::DualwordWikiApp(int &argc, char **argv) : QApplication(argc, ar
 	#endif
 	QApplication::setQuitOnLastWindowClosed(true);
 	qsrand(QTime::currentTime().msec());
-    QWebEngineProfile::defaultProfile()->setRequestInterceptor(new Interceptor(this));
+    //QWebEngineProfile::defaultProfile()->setRequestInterceptor(new Interceptor(this));
 }
 
 DualwordWikiApp::~DualwordWikiApp() {
@@ -43,7 +43,7 @@ QString DualwordWikiApp::getHtml(const QString& f){
 }
 
 void DualwordWikiApp::start() {
-	win.reset(new MainWindow());
+	win = new MainWindow();
 	win->init();
 	win->show();
 }

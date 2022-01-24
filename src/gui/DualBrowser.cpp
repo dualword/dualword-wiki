@@ -17,10 +17,30 @@
 #include "DualBrowser.h"
 #include "Get.h"
 
+bool DualWebPage::acceptNavigationRequest(const QUrl& url, QWebEnginePage::NavigationType type, bool mframe){
+	if(type == NavigationTypeLinkClicked){
+		if(isValidUrl(url)){
+			emit linkClicked(url);
+		    return true;
+		}else{
+			return false;
+		}
+	}
+    return QWebEnginePage::acceptNavigationRequest(url, type, mframe);
+}
+
+bool DualWebPage::isValidUrl(const QUrl& url){
+	 QRegExp reg("(?:\\s*)([a-zA-Z]{2,6})\\.wikipedia\\.org/wiki/.+");
+	 int pos = reg.indexIn(url.toString());
+	 if (pos > -1) {
+		 return true;
+	 }
+	 emit statusBarMessage("Blocked:" + url.host());
+	 return false;
+}
+
 DualBrowser::DualBrowser(QWidget *p, int id) : Browser(p, id), lang("") {
-//	page()->currentFrame()->setScrollBarPolicy(Qt::Vertical,Qt::ScrollBarAlwaysOn);
-//	page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-	QObject::connect(page(),SIGNAL(linkClicked(QUrl)), SLOT(slotLinkClicked(QUrl)));
+	setPage(new DualWebPage(this, id));
 
 }
 
@@ -36,19 +56,4 @@ void DualBrowser::getTitle(const QString& lang1, const QString& lang2, const QSt
 void DualBrowser::getPage(const QString& lang1, const QString& lang2, const QString& name){
 	req.reset(new GetPage(this, lang1, lang2, name, this));
 	req->get();
-}
-
-void DualBrowser::slotLinkClicked(const QUrl& url){
-	if(!isValidUrl(url)) return;
-	emit linkClicked(url);
-}
-
-bool DualBrowser::isValidUrl(const QUrl& url){
-	 QRegExp reg("(?:\\s*)([a-zA-Z]{2,6})\\.wikipedia\\.org/wiki/.+");
-	 int pos = reg.indexIn(url.toString());
-	 if (pos > -1) {
-		 return true;
-	 }
-	 emit statusBarMessage("Blocked:" + url.host());
-	 return false;
 }

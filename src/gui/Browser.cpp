@@ -28,16 +28,10 @@
 #include <QMenu>
 #include <QClipboard>
 
-WebPage::WebPage(QObject *p, int flag) : QWebEnginePage(p){
-//	history()->setMaximumItemCount(25);
-//	if(flag != 0){
-//		QWebSettings* qws = settings();
-//		qws->setAttribute(QWebSettings::JavascriptEnabled, false);
-//	}
-}
-
 bool WebPage::acceptNavigationRequest(const QUrl& url, QWebEnginePage::NavigationType type, bool mframe){
-	emit linkClicked(url);
+	if(type == NavigationTypeLinkClicked || type == NavigationTypeTyped){
+	    return isValidUrl(url);
+	}
     return QWebEnginePage::acceptNavigationRequest(url, type, mframe);
 }
 
@@ -48,32 +42,30 @@ WebPage::~WebPage() {
     profile()->clearAllVisitedLinks();
 }
 
+bool WebPage::isValidUrl(const QUrl& url){
+	if(url.host().toLower().contains("wikipedia.org",Qt::CaseInsensitive) ||
+		url.host().toLower().contains("wikimedia.org",Qt::CaseInsensitive) ||
+		url.host().toLower().contains("wikidata.org",Qt::CaseInsensitive) ||
+		url.host().toLower().contains("wikibooks.org",Qt::CaseInsensitive) ||
+		url.host().toLower().contains("wikiquote.org",Qt::CaseInsensitive) ||
+		url.host().toLower().contains("wikiversity.org",Qt::CaseInsensitive) ||
+		url.host().toLower().contains("wikisource.org",Qt::CaseInsensitive) ||
+		url.host().toLower().contains("wikivoyage.org",Qt::CaseInsensitive) ||
+		url.host().toLower().contains("wikinews.org",Qt::CaseInsensitive) ||
+		url.host().toLower().contains("wiktionary.org",Qt::CaseInsensitive)){
+		return true;
+	}
+	emit statusBarMessage("Blocked:" + url.host());
+	return false;
+}
+
 Browser::Browser(QWidget *p, int id) : QWebEngineView(p), searchString(""), id(id){
 	setPage(new WebPage(this, id));
 	new QShortcut(QKeySequence::Find, this, SLOT(findTxt()), nullptr, Qt::WidgetWithChildrenShortcut);
-    QObject::connect(page(), SIGNAL(loadFinished(bool)), SLOT(loadFinished(bool)));
 }
 
 Browser::~Browser() {
 
-}
-
-void Browser::loadFinished(bool ok){
-//	switch (reply->error()) {
-//		case QNetworkReply::NoError:
-//		case QNetworkReply::OperationCanceledError:
-//		  break;
-//		default:
-//			QString status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString();
-//			QString msg = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-//			if(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() > 0){
-//				setHtml((DualwordWikiApp::getHtml(":/error.html")).arg(reply->errorString()+" ("+status+" "+msg+")").arg(reply->url().toString()));
-//			}else{
-//				setHtml((DualwordWikiApp::getHtml(":/error.html")).arg(reply->errorString()).arg(reply->url().toString()));
-//			}
-//	}
-//	reply->close();
-//	reply->deleteLater();
 }
 
 void Browser::findTxt(){
@@ -90,7 +82,7 @@ void Browser::contextMenuEvent(QContextMenuEvent *event){
     auto r = page()->contextMenuData().linkUrl();
 	if (!r.isEmpty()) {
 		QMenu menu(this);
-		if(isValidUrl(r)){
+		if((qobject_cast<WebPage*>(page()))->isValidUrl(r)){
 			QAction *a = menu.addAction(tr("Open Link in New Tab"), this, SLOT(openLink()));
 			a->setData(r);
 			menu.addSeparator();
@@ -117,21 +109,4 @@ void Browser::openLink(){
 		f->load(a->data().toUrl().toString());
 		tab->createBrowser(f);
 	}
-}
-
-bool Browser::isValidUrl(const QUrl& url){
-	if(url.host().toLower().contains("wikipedia.org",Qt::CaseInsensitive) ||
-		url.host().toLower().contains("wikimedia.org",Qt::CaseInsensitive) ||
-		url.host().toLower().contains("wikidata.org",Qt::CaseInsensitive) ||
-		url.host().toLower().contains("wikibooks.org",Qt::CaseInsensitive) ||
-		url.host().toLower().contains("wikiquote.org",Qt::CaseInsensitive) ||
-		url.host().toLower().contains("wikiversity.org",Qt::CaseInsensitive) ||
-		url.host().toLower().contains("wikisource.org",Qt::CaseInsensitive) ||
-		url.host().toLower().contains("wikivoyage.org",Qt::CaseInsensitive) ||
-		url.host().toLower().contains("wikinews.org",Qt::CaseInsensitive) ||
-		url.host().toLower().contains("wiktionary.org",Qt::CaseInsensitive)){
-		return true;
-	}
-
-	return false;
 }

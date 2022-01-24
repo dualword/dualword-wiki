@@ -23,14 +23,16 @@ class WebPage : public QWebEnginePage{
 	Q_OBJECT
 
 public:
-	WebPage(QObject *p = 0, int flag = 0);
+	WebPage(QObject *p = 0, int flag = 0){};
 	virtual ~WebPage();
+    virtual	bool isValidUrl(const QUrl&);
 
 signals:
 	void linkClicked(QUrl);
+	void statusBarMessage (const QString&);
 
 protected:
-    bool acceptNavigationRequest(const QUrl&, QWebEnginePage::NavigationType, bool);
+    virtual bool acceptNavigationRequest(const QUrl&, QWebEnginePage::NavigationType, bool);
 
 };
 
@@ -66,13 +68,14 @@ public:
 	virtual ~Browser();
 	int getId(){return id;};
 
+signals:
+	void statusBarMessage (const QString&);
+
 public slots:
-	void loadFinished(bool);
 	void findTxt();
 
 protected slots:
     virtual void contextMenuEvent(QContextMenuEvent *event);
-    virtual	bool isValidUrl(const QUrl&);
 	void openLink();
 
 protected:

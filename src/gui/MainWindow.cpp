@@ -41,7 +41,6 @@ MainWindow::MainWindow(QWidget *p, Qt::WindowFlags f) : QMainWindow(p, f),
     toolBar->insertSeparator(actionLike);
     setSlots();
     fillCombo();
-
 }
 
 MainWindow::~MainWindow() {
@@ -60,12 +59,7 @@ Tab* MainWindow::getTab(){
 
 void MainWindow::closeEvent(QCloseEvent *event) {
 	writeSettings();
-    event->accept();
-}
-
-void MainWindow::exit() {
-	writeSettings();
-	qApp->quit();
+	QMainWindow::closeEvent(event);
 }
 
 void MainWindow::showAbout() {

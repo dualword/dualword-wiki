@@ -31,32 +31,33 @@ DualBrowserForm::DualBrowserForm(QWidget *p) : Form(p),
 	sp1->addWidget(sp);
 	box->addWidget(sp1);
 	setLayout(box);
-    QObject::connect(web1,SIGNAL(titleChanged(const QString&)),
-    		SIGNAL(titleChanged(const QString&)));
-    QObject::connect(web1,SIGNAL(urlChanged(const QUrl&)),
-    		SIGNAL(urlChanged(const QUrl&)));
-//    QObject::connect(web1,SIGNAL(statusBarMessage(const QString&)),
-//    		SIGNAL(statusBarMessage(const QString&)));
-//    QObject::connect(web2,SIGNAL(statusBarMessage(const QString&)),
-//    		SIGNAL(statusBarMessage(const QString&)));
+    QObject::connect(web1,SIGNAL(titleChanged(const QString&)),	SIGNAL(titleChanged(const QString&)));
+    QObject::connect(web1,SIGNAL(urlChanged(const QUrl&)), SIGNAL(urlChanged(const QUrl&)));
+    QObject::connect(web1,SIGNAL(statusBarMessage(const QString&)),
+    		SIGNAL(statusBarMessage(const QString&)));
+    QObject::connect(web2,SIGNAL(statusBarMessage(const QString&)),
+    		SIGNAL(statusBarMessage(const QString&)));
     QObject::connect(web1->page(), SIGNAL(linkHovered(const QString&)),
     		SIGNAL(statusBarMessage(const QString&)));
-//    QObject::connect(web1->page(),SIGNAL(statusBarMessage(const QString&)),
-//    		SIGNAL(statusBarMessage(const QString&)));
+    QObject::connect(web1->page(),SIGNAL(statusBarMessage(const QString&)),
+    		SIGNAL(statusBarMessage(const QString&)));
     QObject::connect(web2->page(), SIGNAL(linkHovered(const QString&)),
     		SIGNAL(statusBarMessage(const QString&)));
-//    QObject::connect(web2->page(),SIGNAL(statusBarMessage(const QString&)),
-//    		SIGNAL(statusBarMessage(const QString&)));
-	QObject::connect(web1,SIGNAL(linkClicked(QUrl)), SLOT(linkClicked1(QUrl)));
-	QObject::connect(web2,SIGNAL(linkClicked(QUrl)), SLOT(linkClicked2(QUrl)));
+    QObject::connect(web2->page(),SIGNAL(statusBarMessage(const QString&)),
+    		SIGNAL(statusBarMessage(const QString&)));
+	QObject::connect(web1->page(),SIGNAL(linkClicked(QUrl)), SLOT(linkClicked1(QUrl)));
+	QObject::connect(web2->page(),SIGNAL(linkClicked(QUrl)), SLOT(linkClicked2(QUrl)));
     QObject::connect(web1,SIGNAL(loadStarted()), SIGNAL(loadStarted()));
     QObject::connect(web1,SIGNAL(loadFinished(bool)), SIGNAL(loadFinished(bool)));
     QObject::connect(web1,SIGNAL(loadFinished(bool)), SLOT(slotLoadFinished(bool)));
 	list1 = new QListWidget(this);
 	list1->setVisible(false);
 	sp1->insertWidget(0, list1);
-    QObject::connect(list1,SIGNAL(itemDoubleClicked(QListWidgetItem *)),
-    		SLOT(list1Clicked(QListWidgetItem *)));
+    QObject::connect(list1,SIGNAL(itemDoubleClicked(QListWidgetItem *)), SLOT(list1Clicked(QListWidgetItem *)));
+    QObject::connect(web1->page(), &QWebEnginePage::scrollPositionChanged, [&](const QPointF &pos){
+    	web2->page()->runJavaScript(QString("window.scrollTo(%1, %2);").arg(pos.x()).arg(pos.y()));});
+    QObject::connect(web2->page(), &QWebEnginePage::scrollPositionChanged, [&](const QPointF &pos){
+    	web1->page()->runJavaScript(QString("window.scrollTo(%1, %2);").arg(pos.x()).arg(pos.y()));});
 }
 
 DualBrowserForm::~DualBrowserForm() {

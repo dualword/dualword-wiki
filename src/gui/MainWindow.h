@@ -46,7 +46,6 @@ public slots:
 private slots:
 	void setSlots();
 	void showAbout();
-	void exit();
 	void titleChanged (const QString& title);
 	void load();
 	void fillCombo();

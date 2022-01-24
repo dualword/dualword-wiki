@@ -21,6 +21,16 @@
 
 class Get;
 
+class DualWebPage : public WebPage{
+	Q_OBJECT
+
+public:
+	DualWebPage(QObject *p = 0, int flag = 0){};
+	virtual ~DualWebPage(){};
+    virtual bool acceptNavigationRequest(const QUrl&, QWebEnginePage::NavigationType, bool);
+    bool isValidUrl(const QUrl&);
+};
+
 class DualBrowser : public Browser{
 	Q_OBJECT
 
@@ -36,16 +46,9 @@ public:
 
 signals:
 	void linkClicked(QUrl);
-	void statusBarMessage (const QString&);
-
-protected slots:
-	bool isValidUrl(const QUrl&);
 
 protected:
 	QString lang;
-
-private slots:
-	void slotLinkClicked(const QUrl&);
 
 private:
 	QScopedPointer<Get> req;

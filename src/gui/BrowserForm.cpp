@@ -21,17 +21,12 @@ BrowserForm::BrowserForm(QWidget *p) : Form(p), browser(new Browser(this)) {
 	QVBoxLayout *box = new QVBoxLayout(this);
 	box->addWidget(browser);
 	setLayout(box);
-    QObject::connect(browser,SIGNAL(titleChanged(const QString&)),
-    		SIGNAL(titleChanged(const QString&)));
-    QObject::connect(browser,SIGNAL(urlChanged(const QUrl&)),
-    		SIGNAL(urlChanged(const QUrl&)));
-    QObject::connect(browser->page(), SIGNAL(linkHovered(const QString&)),
-    		SIGNAL(statusBarMessage(const QString&)));
-//    QObject::connect(browser->page(),SIGNAL(statusBarMessage(const QString&)),
-//    		SIGNAL(statusBarMessage(const QString&)));
+    QObject::connect(browser,SIGNAL(titleChanged(const QString&)), SIGNAL(titleChanged(const QString&)));
+    QObject::connect(browser,SIGNAL(urlChanged(const QUrl&)), SIGNAL(urlChanged(const QUrl&)));
     QObject::connect(browser,SIGNAL(loadFinished(bool)), SIGNAL(loadFinished(bool)));
     QObject::connect(browser,SIGNAL(loadStarted()), SIGNAL(loadStarted()));
-
+    QObject::connect(browser->page(), SIGNAL(linkHovered(const QString&)), SIGNAL(statusBarMessage(const QString&)));
+    QObject::connect(browser->page(),SIGNAL(statusBarMessage(const QString&)), SIGNAL(statusBarMessage(const QString&)));
 }
 
 BrowserForm::~BrowserForm() {

@@ -17,11 +17,11 @@
 #include "gui/MainWindow.h"
 
 void MainWindow::setSlots() {
-    QObject::connect(actionQuit,SIGNAL(triggered()), SLOT(exit()));
+    QObject::connect(qApp,SIGNAL(aboutToQuit()), SLOT(writeSettings()));
+    QObject::connect(actionQuit,SIGNAL(triggered()), qApp, SLOT(quit()));
     QObject::connect(actionAbout,SIGNAL(triggered()), SLOT(showAbout()));
     QObject::connect(tab,SIGNAL(currentForm(Form*)), SLOT(currentForm(Form*)));
 	QObject::connect(editUrl,SIGNAL(returnPressed()), SLOT(load()));
 	QObject::connect(menuHistory,SIGNAL(aboutToShow()), SLOT(showHistory()));
-	QObject::connect(combo2,SIGNAL(currentIndexChanged(const QString&)),
-			SLOT(combo2change(const QString&)));
+	QObject::connect(combo2,SIGNAL(currentIndexChanged(const QString&)), SLOT(combo2change(const QString&)));
 }
