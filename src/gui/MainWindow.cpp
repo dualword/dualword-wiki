@@ -50,7 +50,7 @@ MainWindow::~MainWindow() {
 void MainWindow::init(){
 	readSettings();
 	lang = combo2->currentText();
-    tab->createBrowser();
+    tab->createBrowser<>();
 }
 
 Tab* MainWindow::getTab(){
@@ -144,28 +144,32 @@ void MainWindow::urlChanged(const QUrl& url) {
 
 void MainWindow::fillCombo(){
 	QStringList list;
-	 list << "ar" << "az";
-	 list << "be" << "bg";
-	 list << "ca" << "ce" << "ceb" << "cs";
-	 list << "da" << "de";
-	 list << "en" << "es" << "el" << "eo" << "et" << "eu";
-	 list << "fa" << "fr" << "fi";
-	 list << "gl";
-	 list << "hi" << "he" << "hr" << "hu"  << "hy";
-	 list << "it" << "id";
-	 list << "ja";
-	 list << "ka" << "ko" << "kk";
-	 list << "la" << "lv" << "lt";
-	 list << "min" << "mn" << "ms";
-	 list << "nn" << "no" << "nl";
-	 list << "pl" << "pt";
+	 list << "ace" << "af" << "als" << "am" << "an" << "ar" << "arz" << "ast" << "az" << "azb";
+	 list  << "ba" << "bar" << "be" << "bcl" << "bpy" << "bg" << "bn" << "bs" << "br" << "bug";
+	 list << "ca" << "cdo" << "ce" << "ceb" << "ckb" << "crh" << "cs" << "cv" << "cy";
+	 list << "da" << "de" << "diq";
+	 list << "en" << "es" << "el" << "eml" << "eo" << "et" << "eu";
+	 list << "fa" << "fr" << "fi" << "fo" << "frr" << "fy";
+	 list << "ga" << "gd" << "gl" << "gu";
+	 list << "ha" << "hi" << "he" << "hr" << "hsb" << "ht" << "hu"  << "hy";
+	 list << "ia" << "it" << "id" << "io" << "ilo" << "is";
+	 list << "ja" << "jv";
+	 list << "ka" << "ko" << "kk" << "kn" << "ku" << "ky";
+	 list << "la" << "lb" << "li" << "lij" << "lmo" << "lv" << "lt";
+	 list << "mai" << "mg" << "mhr" << "min"<< "ml" << "mk" << "mn" << "mrj" << "mr" << "ms" << "my" << "mzn";
+	 list << "nap" << "nds" << "nn" << "ne" << "new" << "no" << "nl" << "nv";
+	 list << "oc" << "or" << "os";
+	 list << "pa" << "pl" << "pms" << "pnb" << "ps" << "pt";
+	 list << "qu";
 	 list << "ro" << "ru";
-	 list << "simple" << "sh" << "sr" << "sk" << "sl" << "sv";
-	 list << "ta" << "tr" << "th";
+	 list << "sa" << "sah" << "sco" << "scn" << "sd" << "simple" << "se" << "sh" << "si" << "sr" << "sq" << "sk" << "sl" << "su" << "sv" << "sw" << "szl";
+	 list << "ta" << "te" << "tg" << "th" << "tr" << "tl" << "tt";
 	 list << "uk" << "ur" << "uz";
-	 list << "vi";
-	 list << "war";
-	 list << "zh";
+	 list << "vec" << "vi" << "vo";
+	 list << "xmf";
+	 list << "yi" << "yo";
+	 list << "wa" << "war" << "wuu";
+	 list << "zh" << "zu";
 
 	 combo1->addItems(list);
 	 combo2->addItems(list);

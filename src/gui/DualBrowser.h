@@ -25,7 +25,7 @@ class DualWebPage : public WebPage{
 	Q_OBJECT
 
 public:
-	DualWebPage(QObject *p = 0, int flag = 0){};
+	DualWebPage(QObject *p = 0){};
 	virtual ~DualWebPage(){};
     virtual bool acceptNavigationRequest(const QUrl&, QWebEnginePage::NavigationType, bool);
     bool isValidUrl(const QUrl&);

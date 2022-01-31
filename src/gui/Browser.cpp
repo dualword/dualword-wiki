@@ -15,10 +15,8 @@
 */
 
 #include "Browser.h"
-#include "app/DualwordWikiApp.h"
-#include "app/NetworkAccessManager.h"
+#include "app/global.h"
 #include "Form.h"
-#include "MainWindow.h"
 #include "BrowserForm.h"
 #include "DualBrowserForm.h"
 
@@ -60,7 +58,7 @@ bool WebPage::isValidUrl(const QUrl& url){
 }
 
 Browser::Browser(QWidget *p, int id) : QWebEngineView(p), searchString(""), id(id){
-	setPage(new WebPage(this, id));
+	setPage(new WebPage(this));
 	new QShortcut(QKeySequence::Find, this, SLOT(findTxt()), nullptr, Qt::WidgetWithChildrenShortcut);
 }
 
@@ -83,7 +81,8 @@ void Browser::contextMenuEvent(QContextMenuEvent *event){
 	if (!r.isEmpty()) {
 		QMenu menu(this);
 		if((qobject_cast<WebPage*>(page()))->isValidUrl(r)){
-			QAction *a = menu.addAction(tr("Open Link in New Tab"), this, SLOT(openLink()));
+			QAction *a = menu.addAction(tr("Open Link in New Tab"), [&]{
+			mainWin->getTab()->openLink(a->data().toUrl(),id);});
 			a->setData(r);
 			menu.addSeparator();
 		}
@@ -92,21 +91,4 @@ void Browser::contextMenuEvent(QContextMenuEvent *event){
 		return;
 	}
 	QWebEngineView::contextMenuEvent(event);
-}
-
-void Browser::openLink(){
-	QAction *a = qobject_cast<QAction*>(sender());
-	QString url = a->data().toUrl().toString();
-	Form *f = qobject_cast<Form*>(parentWidget());
-	if(!f) f = qobject_cast<Form*>(parentWidget()->parentWidget()->parentWidget());
-    Tab *tab = DualwordWikiApp::instance()->window()->getTab();
-	if(qobject_cast<DualBrowserForm*>(f)){
-		Form* f = new DualBrowserForm(tab);
-		f->load(a->data().toUrl(), id);
-		tab->createDualBrowser(f);
-	}else if(qobject_cast<BrowserForm*>(f)){
-		Form* f = new BrowserForm(tab);
-		f->load(a->data().toUrl().toString());
-		tab->createBrowser(f);
-	}
 }

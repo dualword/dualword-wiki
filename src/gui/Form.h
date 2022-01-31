@@ -28,6 +28,7 @@ public:
 	virtual ~Form();
 	virtual QString getTitle() const = 0;
 	virtual QString getUrl() const = 0;
+	virtual Form* clone() {return 0;};
 
 public slots:
 	virtual void load(const QString&) {};
@@ -58,6 +59,16 @@ signals:
 	void loadFinished(bool);
 	void loadStarted();
 	void refresh();
+
+};
+
+template <typename T>
+class MainForm : public Form {
+
+public:
+	MainForm(QWidget *p = 0) : Form(p) {};
+	virtual ~MainForm(){};
+	Form* clone() {return new T(0);};
 
 };
 

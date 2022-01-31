@@ -40,7 +40,7 @@ bool DualWebPage::isValidUrl(const QUrl& url){
 }
 
 DualBrowser::DualBrowser(QWidget *p, int id) : Browser(p, id), lang("") {
-	setPage(new DualWebPage(this, id));
+	setPage(new DualWebPage(this));
 
 }
 

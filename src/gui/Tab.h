@@ -21,7 +21,9 @@
 #include <QTabWidget>
 #include <QUrl>
 
-class Form;
+#include "app/DualwordWikiApp.h"
+#include "BrowserForm.h"
+#include "DualBrowserForm.h"
 
 class Tab : public QTabWidget {
   Q_OBJECT
@@ -29,17 +31,29 @@ class Tab : public QTabWidget {
 public:
 	Tab(QWidget *p=0);
 	virtual ~Tab();
+	template <typename T = BrowserForm>
+	int createBrowser(){
+		auto f = new T(this);
+		QObject::connect(f,SIGNAL(titleChanged(const QString&)), SLOT(setToolTip(const QString&)));
+		f->home();
+		return addTab(f, "");
 
-signals:
-	void NewBrowser();
-	void NewDualBrowser();
-	void currentForm(Form*);
+	};
 
 public slots:
-	int createBrowser(Form* f = 0);
-	int createDualBrowser(Form* f = 0);
 	void closeTab(int);
 	void setToolTip(const QString&);
+
+	void openLink(const QUrl& url, int id){
+		auto p = qobject_cast<Form*>(currentWidget());
+		auto f = p->clone();
+		QObject::connect(f,SIGNAL(titleChanged(const QString&)), SLOT(setToolTip(const QString&)));
+		f->load(url.toString(), id);
+		addTab(f, "");
+	}
+
+signals:
+	void currentForm(Form*);
 
 private slots:
     void contextMenuRequested(const QPoint &position);

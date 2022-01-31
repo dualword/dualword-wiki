@@ -13,6 +13,7 @@ CONFIG += c++11 thread release
 HEADERS += \
 	app/DualwordWikiApp.h \
 	app/NetworkAccessManager.h \
+	app/global.h \
 	gui/MainWindow.h \
 	gui/Browser.h \
 	gui/DualBrowser.h \

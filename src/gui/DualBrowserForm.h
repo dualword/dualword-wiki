@@ -24,7 +24,7 @@
 class DualBrowser;
 class Browser;
 
-class DualBrowserForm  : public Form {
+class DualBrowserForm  : public MainForm<DualBrowserForm> {
 	Q_OBJECT
 
 public:

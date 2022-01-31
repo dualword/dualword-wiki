@@ -16,8 +16,9 @@
 
 #include "BrowserForm.h"
 #include "Browser.h"
+#include "app/global.h"
 
-BrowserForm::BrowserForm(QWidget *p) : Form(p), browser(new Browser(this)) {
+BrowserForm::BrowserForm(QWidget *p) : MainForm(p), browser(new Browser(this)) {
 	QVBoxLayout *box = new QVBoxLayout(this);
 	box->addWidget(browser);
 	setLayout(box);
@@ -43,6 +44,11 @@ QString BrowserForm::getUrl() const{
 
 void BrowserForm::load(const QString& url){
 	browser->load(QUrl::fromUserInput(QUrl::fromEncoded(url.toUtf8()).toString()));
+	browser->setFocus();
+}
+
+void BrowserForm::load(const QUrl& url, int id){
+	browser->load(url);
 	browser->setFocus();
 }
 

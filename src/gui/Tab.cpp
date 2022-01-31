@@ -14,10 +14,7 @@
  *
 */
 
-#include "app/DualwordWikiApp.h"
 #include "Tab.h"
-#include "BrowserForm.h"
-#include "DualBrowserForm.h"
 
 Tab::Tab(QWidget *p) : QTabWidget(p) {
 	setTabsClosable(true);
@@ -26,10 +23,8 @@ Tab::Tab(QWidget *p) : QTabWidget(p) {
     setTabsClosable(true);
     setMovable(true);
     connect(this, &QTabWidget::currentChanged, [this](){emit currentForm(qobject_cast<Form*>(currentWidget()));});
-    connect(this, SIGNAL(tabCloseRequested (int)), SLOT(closeTab(int)));
-    connect(this, SIGNAL(NewBrowser()), SLOT(createBrowser()));
-    connect(this, SIGNAL(NewDualBrowser()), SLOT(createDualBrowser()));
-    connect(this, SIGNAL(customContextMenuRequested(QPoint)), SLOT(contextMenuRequested(QPoint)));
+    connect(this, &QTabWidget::tabCloseRequested, this, &Tab::closeTab);
+    connect(this, &QTabWidget::customContextMenuRequested, this, &Tab::contextMenuRequested);
 }
 
 Tab::~Tab() {
@@ -38,47 +33,19 @@ Tab::~Tab() {
 
 void Tab::contextMenuRequested(const QPoint &position) {
 	QMenu menu;
-    menu.addAction(tr("Browser Tab"), this, SIGNAL(NewBrowser()));
-    menu.addAction(tr("Dual Browser Tab"), this, SIGNAL(NewDualBrowser()));
+    menu.addAction(tr("Browser Tab"), [this]{createBrowser<>();});
+    menu.addAction(tr("Dual Browser Tab"), [this]{createBrowser<DualBrowserForm>();});
     menu.exec(QCursor::pos());
 }
 
-int Tab::createBrowser(Form* form){
-	Form *f;
-	if(form){
-		f = form;
-	}else{
-		f = new BrowserForm(this);
-	}
-    QObject::connect(f,SIGNAL(titleChanged(const QString&)), SLOT(setToolTip(const QString&)));
-    if(!form){
-    	f->home();
-    }
-	return addTab(f,"Browser");
-}
-
-int Tab::createDualBrowser(Form* form){
-	Form *f;
-	if(form){
-		f = form;
-	}else{
-		f = new DualBrowserForm(this);
-	}
-    QObject::connect(f,SIGNAL(titleChanged(const QString&)), SLOT(setToolTip(const QString&)));
-    if(!form){
-    	f->home();
-    }
-	return addTab(f,"Dual Browser");
-}
-
 void Tab::closeTab(int i){
-	if(this->count() == 1) createBrowser();
+	if(this->count() == 1) createBrowser<>();
 	widget(i)->deleteLater();
 	removeTab(i);
 }
 
 void Tab::setToolTip(const QString& s){
-	Form *f = qobject_cast<Form*>(sender());
+	auto f = qobject_cast<Form*>(sender());
 	int i = indexOf(f);
 	if (i != -1) {
 		setTabText(i, f->getTitle().left(25));

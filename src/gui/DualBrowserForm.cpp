@@ -16,10 +16,9 @@
 
 #include "DualBrowserForm.h"
 #include "DualBrowser.h"
-#include "app/DualwordWikiApp.h"
-#include "MainWindow.h"
+#include "app/global.h"
 
-DualBrowserForm::DualBrowserForm(QWidget *p) : Form(p),
+DualBrowserForm::DualBrowserForm(QWidget *p) : MainForm(p),
 	web1(new DualBrowser(this,1)), web2(new DualBrowser(this,2)), nextUrl(""), list1(0) {
 	web1->setLang(DualwordWikiApp::instance()->window()->lang1());
 	web2->setLang(DualwordWikiApp::instance()->window()->lang2());

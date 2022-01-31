@@ -14,39 +14,22 @@
  *
 */
 
-#ifndef SRC_GUI_BROWSERFORM_H_
-#define SRC_GUI_BROWSERFORM_H_
+#ifndef SRC_APP_GLOBAL_H_
+#define SRC_APP_GLOBAL_H_
 
-#include "Form.h"
+#include "app/DualwordWikiApp.h"
+#include "gui/MainWindow.h"
 
-class Browser;
+#if defined(mainApp)
+#undef mainApp
+#endif
+#define mainApp (DualwordWikiApp::instance())
 
-class BrowserForm : public MainForm<BrowserForm> {
-	Q_OBJECT
+#if defined(mainWin)
+#undef mainWin
+#endif
+#define mainWin (DualwordWikiApp::instance()->window())
 
-public:
-	BrowserForm(QWidget *p);
-	virtual ~BrowserForm();
 
-public:
-	virtual QString getTitle() const;
-	virtual QString getUrl() const;
 
-public slots:
-	void load(const QString&);
-	void load(const QUrl&, int);
-	void back();
-	void forward ();
-	void reload ();
-	void stop ();
-	void home();
-	void next ();
-	QWebEngineHistory* getHistory();
-	void loadHistory();
-
-private:
-	Browser* browser;
-
-};
-
-#endif /* SRC_GUI_BROWSERFORM_H_ */
+#endif /* SRC_APP_GLOBAL_H_ */
