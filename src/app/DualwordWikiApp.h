@@ -30,6 +30,7 @@ public:
 	MainWindow* window() {return win;};
     static DualwordWikiApp *instance();
     static QString getHtml(const QString&);
+    void clearWebHistory();
 
 public Q_SLOTS:
 	void start();

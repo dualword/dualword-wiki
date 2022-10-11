@@ -17,19 +17,22 @@
 #include "DualwordWikiApp.h"
 #include "gui/MainWindow.h"
 #include "gui/Browser.h"
+#include <QtWebEngineWidgets>
 
 DualwordWikiApp::DualwordWikiApp(int &argc, char **argv) : QApplication(argc, argv) {
 	setApplicationName("Dualword-wiki");
+	setOrganizationName("dualword");
 	#ifdef _VER
 		QApplication::setApplicationVersion(_VER);
 	#endif
 	QApplication::setQuitOnLastWindowClosed(true);
 	qsrand(QTime::currentTime().msec());
+	clearWebHistory();
     //QWebEngineProfile::defaultProfile()->setRequestInterceptor(new Interceptor(this));
 }
 
 DualwordWikiApp::~DualwordWikiApp() {
-
+	clearWebHistory();
 }
 
 DualwordWikiApp *DualwordWikiApp::instance() {
@@ -46,4 +49,10 @@ void DualwordWikiApp::start() {
 	win = new MainWindow();
 	win->init();
 	win->show();
+}
+
+void DualwordWikiApp::clearWebHistory(){
+	QWebEngineProfile::defaultProfile()->cookieStore()->deleteAllCookies();
+	QWebEngineProfile::defaultProfile()->clearHttpCache();
+	QWebEngineProfile::defaultProfile()->clearAllVisitedLinks();
 }

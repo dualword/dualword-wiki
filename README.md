@@ -1,5 +1,5 @@
 
-Dualword-wiki - [Wikipedia](http://www.wikipedia.org) browser.
+Dualword-wiki - [Wikipedia](https://www.wikipedia.org) browser.
 
 Features:
  - site-specific web browser with access to the Wikipedia websites:
@@ -14,8 +14,10 @@ Source code: http://github.com/dualword/dualword-wiki/
 Third Party Software:
  - Qt License: LGPL v3
 
-![Screenshot](etc/screenshot/Dualword-wiki.png)
-
-![Screenshot](etc/screenshot/Dualword-wiki-dual-browser.png)
-
-![Screenshot](etc/screenshot/Dualword-wiki-dual-browser2.png)
+<p float="middle">
+<img src="etc/screenshot/Dualword-wiki.png" width="300" />
+<img src="etc/screenshot/Dualword-wiki-dual-browser.png" width="300" />
+</p>
+<p float="middle">
+<img src="etc/screenshot/Dualword-wiki-dual-browser2.png" width="300" />
+</p>

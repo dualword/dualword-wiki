@@ -35,9 +35,6 @@ bool WebPage::acceptNavigationRequest(const QUrl& url, QWebEnginePage::Navigatio
 
 WebPage::~WebPage() {
 	history()->clear();
-    profile()->cookieStore()->deleteAllCookies();
-    profile()->clearHttpCache();
-    profile()->clearAllVisitedLinks();
 }
 
 bool WebPage::isValidUrl(const QUrl& url){
