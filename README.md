@@ -10,7 +10,6 @@ Features:
 			
 License: GNU GENERAL PUBLIC LICENSE Version 3  
 Source code: https://github.com/dualword/dualword-wiki  
-Files: https://sourceforge.net/projects/dualword-wiki  
 
 Third Party Software:
  - Qt License: LGPL v3
