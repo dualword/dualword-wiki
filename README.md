@@ -14,8 +14,8 @@ Source code: https://github.com/dualword/dualword-wiki
 Third Party Software:
  - Qt License: LGPL v3
 
-<p float="middle">
-<img src="etc/screenshot/Dualword-wiki.png" width="150" />
-<img src="etc/screenshot/Dualword-wiki-dual-browser.png" width="150" />
-<img src="etc/screenshot/Dualword-wiki-dual-browser2.png" width="150" />
+<p align="middle">
+<img src="etc/screenshot/Dualword-wiki.png" width="150"/>
+<img src="etc/screenshot/Dualword-wiki-dual-browser.png" width="150"/>
+<img src="etc/screenshot/Dualword-wiki-dual-browser2.png" width="150"/>
 </p>
